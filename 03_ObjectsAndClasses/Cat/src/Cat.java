@@ -12,6 +12,8 @@ public class Cat
 
     private static int count;
 
+    private Color color;
+
     public Cat(double weight) {
         this.weight = weight;
     }
@@ -111,5 +113,11 @@ public class Cat
         return getStatus().equals("Sleeping") || getStatus().equals("Playing");
     }
 
+    public Color getColor() {
+        return color;
+    }
 
+    public void setColor(Color color) {
+        this.color = color;
+    }
 }

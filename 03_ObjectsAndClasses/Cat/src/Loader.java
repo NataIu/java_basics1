@@ -8,6 +8,9 @@ public class Loader
         Cat kitten2 = getKitten();
         Cat kitten3 = getKitten();
 
+        kitten1.setColor(Color.ORANGE);
+        System.out.println(kitten1.getColor().toString());
+
     }
 
 
