@@ -1,12 +1,14 @@
 
 public class Cat
 {
+    private final static int eyesCount = 2; //количество глаз
+
     private double originWeight;
     private double weight;
     private double eatenFoodWeight;
 
-    private double minWeight;
-    private double maxWeight;
+    private final static double minWeight = 1000.0; //минимальный вес
+    private final static double maxWeight = 9000.0; //максимальный вес
 
     private static int count;
 
@@ -14,8 +16,8 @@ public class Cat
     {
         weight = 1500.0 + 3000.0 * Math.random();
         originWeight = weight;
-        minWeight = 1000.0;
-        maxWeight = 9000.0;
+//        minWeight = 1000.0;
+//        maxWeight = 9000.0;
         count++;
 
     }
