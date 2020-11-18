@@ -12,6 +12,10 @@ public class Cat
 
     private static int count;
 
+    public Cat(double weight) {
+        this.weight = weight;
+    }
+
     public Cat()
     {
         weight = 1500.0 + 3000.0 * Math.random();
