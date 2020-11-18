@@ -2,16 +2,14 @@
 public class Cat
 {
     private final static int eyesCount = 2; //количество глаз
-
-    private double originWeight;
-    private double weight;
-    private double eatenFoodWeight;
-
     private final static double minWeight = 1000.0; //минимальный вес
     private final static double maxWeight = 9000.0; //максимальный вес
 
     private static int count;
 
+    private double originWeight;
+    private double weight;
+    private double eatenFoodWeight;
     private Color color;
 
     public Cat(double weight) {
@@ -26,6 +24,15 @@ public class Cat
 //        maxWeight = 9000.0;
         count++;
 
+    }
+
+    public Cat deepCopyCat() {
+        Cat newCat = new Cat();
+        newCat.setOriginWeight(this.getOriginWeight());
+        newCat.setWeight(this.getWeight());
+        newCat.setEatenFoodWeight(this.getEatenFoodWeight());
+        newCat.setColor(this.getColor());
+        return newCat;
     }
 
     public void meow()
@@ -119,5 +126,21 @@ public class Cat
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public double getOriginWeight() {
+        return originWeight;
+    }
+
+    public void setOriginWeight(double originWeight) {
+        this.originWeight = originWeight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+
+    public void setEatenFoodWeight(double eatenFoodWeight) {
+        this.eatenFoodWeight = eatenFoodWeight;
     }
 }
