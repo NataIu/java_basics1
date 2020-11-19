@@ -29,7 +29,7 @@ public class Main {
       String stringNumber = number.toString();
       for (int i = 0; i < stringNumber.length(); i++) {
         Character c = stringNumber.charAt(i);
-        sum = sum + Integer.parseInt(c.toString());
+        sum = sum + Character.getNumericValue(c);
       }
     }
 
