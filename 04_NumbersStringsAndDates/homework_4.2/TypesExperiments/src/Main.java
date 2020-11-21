@@ -14,10 +14,10 @@ public class Main {
         System.out.println("long: min = "+Long.MIN_VALUE+", max = "+Long.MAX_VALUE);
 
         //float
-        System.out.println("float: min = "+Float.MIN_VALUE+", max = "+Float.MAX_VALUE);
+        System.out.println("float: min = "+(-Float.MAX_VALUE)+", max = "+Float.MAX_VALUE);
 
         //double
-        System.out.println("double: min = "+Double.MIN_VALUE+", max = "+Double.MAX_VALUE);
+        System.out.println("double: min = "+(-Double.MAX_VALUE)+", max = "+Double.MAX_VALUE);
 
 
     }
