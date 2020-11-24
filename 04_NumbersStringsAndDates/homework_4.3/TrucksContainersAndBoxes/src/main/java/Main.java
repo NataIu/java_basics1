@@ -12,38 +12,26 @@ public class Main {
 
         int boxesQuantity = Integer.parseInt(boxes);
 
-        int neededQuantityOfContainers = (int) Math.ceil( ((double) boxesQuantity) / maxBoxesQuantityInContainer);
-        int quantityOfBoxesInLastContainer = (boxesQuantity % maxBoxesQuantityInContainer == 0 ? maxBoxesQuantityInContainer : boxesQuantity % maxBoxesQuantityInContainer);
-        int neededQuantityOfTrucks = (int) Math.ceil( ((double) neededQuantityOfContainers)/maxContainersQuantityInTruck);
-        int quantityOfContainersInLastTruck = (neededQuantityOfContainers % maxContainersQuantityInTruck == 0 ?
-                maxContainersQuantityInTruck : neededQuantityOfContainers % maxContainersQuantityInTruck);
-
+        int recentNumberOfTruck = 0;
         int recentNumberOfContainer = 0;
-        int recentNumberOfBox = 0;
 
+        for (int i = 0; i <boxesQuantity; i++) {
 
-        for (int i = 0; i < neededQuantityOfTrucks; i++) {
-
-
-            System.out.println("Грузовик: "+(i+1));
-            int maxCounterForContainers = ((i+1) == neededQuantityOfTrucks ? quantityOfContainersInLastTruck : maxContainersQuantityInTruck);
-            for (int j = 0; j < maxCounterForContainers; j++) {
-
-                recentNumberOfContainer++;
-                int maxCounterForBoxes = ((i+1) == neededQuantityOfTrucks && (j+1) == maxCounterForContainers ? quantityOfBoxesInLastContainer : maxBoxesQuantityInContainer);
-
-                System.out.println("\tКонтейнер: "+recentNumberOfContainer);
-                for (int k = 0; k < maxCounterForBoxes; k++) {
-                    recentNumberOfBox++;
-                    System.out.println("\t\tЯщик: "+recentNumberOfBox);
-
-                }
+            if (i % (maxContainersQuantityInTruck*maxBoxesQuantityInContainer) == 0) {
+                recentNumberOfTruck++;
+                System.out.println("Грузовик: " + recentNumberOfTruck);
 
             }
 
+            if ((i - (recentNumberOfTruck-1)*maxContainersQuantityInTruck*maxBoxesQuantityInContainer) % maxBoxesQuantityInContainer == 0) {
+                recentNumberOfContainer++;
+                System.out.println("\tКонтейнер: " + recentNumberOfContainer);
+            }
+
+            System.out.println("\t\tЯщик: " + (i+1));
         }
 
-        System.out.println("Необходимо:\nгрузовиков - "+neededQuantityOfTrucks+" шт.\nконтейнеров - "+neededQuantityOfContainers+" шт.");
+        System.out.println("Необходимо:"+System.lineSeparator()+"грузовиков - "+recentNumberOfTruck+" шт."+System.lineSeparator()+"контейнеров - "+recentNumberOfContainer+" шт.");
     }
 
 }
