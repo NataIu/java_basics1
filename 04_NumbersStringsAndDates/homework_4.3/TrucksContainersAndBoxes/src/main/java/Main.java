@@ -2,10 +2,10 @@ import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) {
+    private static final int MAX_CONTAINERS_QUANTITY_IN_TRUCK = 12;
+    private static final int MAX_BOXES_QUANTITY_IN_CONTAINER = 27;
 
-        int maxContainersQuantityInTruck = 12;
-        int maxBoxesQuantityInContainer = 27;
+    public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
         String boxes = scanner.nextLine();
@@ -17,13 +17,13 @@ public class Main {
 
         for (int i = 0; i <boxesQuantity; i++) {
 
-            if (i % (maxContainersQuantityInTruck*maxBoxesQuantityInContainer) == 0) {
+            if (i % (MAX_CONTAINERS_QUANTITY_IN_TRUCK*MAX_BOXES_QUANTITY_IN_CONTAINER) == 0) {
                 recentNumberOfTruck++;
                 System.out.println("Грузовик: " + recentNumberOfTruck);
 
             }
 
-            if ((i - (recentNumberOfTruck-1)*maxContainersQuantityInTruck*maxBoxesQuantityInContainer) % maxBoxesQuantityInContainer == 0) {
+            if ((i - (recentNumberOfTruck-1)*MAX_CONTAINERS_QUANTITY_IN_TRUCK*MAX_BOXES_QUANTITY_IN_CONTAINER) % MAX_BOXES_QUANTITY_IN_CONTAINER == 0) {
                 recentNumberOfContainer++;
                 System.out.println("\tКонтейнер: " + recentNumberOfContainer);
             }
