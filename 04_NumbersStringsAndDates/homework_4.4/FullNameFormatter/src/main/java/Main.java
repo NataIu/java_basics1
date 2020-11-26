@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class Main {
 
-    private static final String VALID_SYMBOLS = "АБВГДЕЁЖЗИЙУЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя-";
+//    private static final String VALID_SYMBOLS = "АБВГДЕЁЖЗИЙУЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя-";
     private static final String FORMAT_ERROR_MESSAGE = "Введенная строка не является ФИО";
 
     public static void main(String[] args) {
@@ -54,7 +54,8 @@ public class Main {
         boolean isValidSymbol = true;
         int i = 0;
         while (i < text.length() && isValidSymbol) {
-            if (VALID_SYMBOLS.indexOf(text.charAt(i)) < 0) {
+            if ( text.charAt(i) != '-' &&
+                    ((Character.toLowerCase(text.charAt(i)) > 'я') || (Character.toLowerCase(text.charAt(i)) < 'а'))) {
                 isValidSymbol = false;
             }
             i++;
