@@ -1,7 +1,5 @@
 public class Main {
 
-  private static final String ALL_NUMBERS = "0123456789";
-
   public static void main(String[] args) {
 
     String currentWord;
@@ -27,7 +25,7 @@ public class Main {
       isNumber = true;
       i = 0;
       while (i < currentWord.length() && isNumber) {
-        if (ALL_NUMBERS.indexOf(currentWord.charAt(i)) < 0) {
+        if (! Character.isDigit(currentWord.charAt(i))) {
           isNumber = false;
         }
         i++;
