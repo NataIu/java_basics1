@@ -52,13 +52,12 @@ public class Main {
     private static boolean isValidWord(String text) {
 
         boolean isValidSymbol = true;
-        int i = 0;
-        while (i < text.length() && isValidSymbol) {
+        for (int i = 0; i < text.length(); i++) {
             if ( text.charAt(i) != '-' &&
                     ((Character.toLowerCase(text.charAt(i)) > 'я') || (Character.toLowerCase(text.charAt(i)) < 'а'))) {
                 isValidSymbol = false;
+                break;
             }
-            i++;
         }
         return isValidSymbol;
     }
