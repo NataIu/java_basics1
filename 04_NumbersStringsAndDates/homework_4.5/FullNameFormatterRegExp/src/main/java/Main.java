@@ -13,23 +13,22 @@ public class Main {
         break;
       }
 
-      if (input.replaceAll("[^а-яА-Я \\-]","").length() != input.length()) {
+      if (isWrongFormat(input)) {
         System.out.println(FORMAT_ERROR_MESSAGE);
         continue;
       }
 
       String[] parts = input.trim().split("\\s+");
-      if (parts.length != 3) {
-        System.out.println(FORMAT_ERROR_MESSAGE);
-        continue;
-      }
-
       System.out.println("Фамилия: " + parts[0]);
       System.out.println("Имя: " + parts[1]);
       System.out.println("Отчество: " + parts[2]);
-
-
     }
+  }
+
+  private static boolean isWrongFormat(String text) {
+    String wordFormat = "[а-яА-ЯёЁ-]+";
+    String spaceFormat = " +";
+    return !text.matches(wordFormat+spaceFormat+wordFormat+spaceFormat+wordFormat);
   }
 
 }
