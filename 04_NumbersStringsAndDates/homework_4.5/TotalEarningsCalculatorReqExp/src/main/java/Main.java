@@ -1,22 +1,16 @@
 public class Main {
 
   public static void main(String[] args) {
-//    calculateSalarySum("  Маша - 100, Оля - 250, Коля 8  ");
-        calculateSalarySum("  Маша  ");
+    calculateSalarySum("  Маша - 100, Оля - 250, Коля 8  ");
   }
 
   public static int calculateSalarySum(String text){
-    //TODO: реализуйте
 
     int result = 0;
 
-    text = text.replaceAll("[^0-9 ]","").trim();
-    if (text.length() > 0) {
-      String[] summs = text.split("\\s+");
-
-      for (int i = 0; i < summs.length; i++) {
-        result += Integer.parseInt(summs[i]);
-      }
+    String[] summs = text.split("[[,\\s+]\\s+]");
+    for (int i = 0; i < summs.length; i++) {
+      result += (summs[i].matches("[0-9]+") ? Integer.parseInt(summs[i]) : 0);
     }
 
     System.out.println(result);
