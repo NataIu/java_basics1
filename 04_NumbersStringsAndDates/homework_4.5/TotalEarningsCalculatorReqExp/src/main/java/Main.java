@@ -8,7 +8,7 @@ public class Main {
 
     int result = 0;
 
-    String[] summs = text.split("[[,\\s+]\\s+]");
+    String[] summs = text.split("[\\p{Punct} ]+");
     for (int i = 0; i < summs.length; i++) {
       result += (summs[i].matches("[0-9]+") ? Integer.parseInt(summs[i]) : 0);
     }
