@@ -2,20 +2,23 @@ public class Main {
 
   public static void main(String[] args) {
 
+
+    String text = "Everyone could notice that people often complain and sa.";
+
+    System.out.println(splitTextInToWords(text));
   }
 
   public static String splitTextInToWords(String text) {
 
-    String[] words = text.replaceAll("[^a-zA-Z’ ]"," ").trim().split("\\s+");
-    StringBuilder builder = new StringBuilder();
-    for (int i = 0; i < words.length; i++) {
-      builder.append(words[i]);
-      if (i != words.length -1) {
-        builder.append(System.lineSeparator());
-      }
-    }
 
-    return builder.toString();
+    StringBuilder builder = new StringBuilder();
+    String pattern = "[\\p{Punct}0-9 -]+";
+    // отдельно обработаем начало и конец строки
+    text = text.replaceAll("^"+pattern, "");
+    text = text.replaceAll(pattern+"$", "");
+    //а теперь ве остальное
+    text = text.replaceAll(pattern, System.lineSeparator());
+    return text;
   }
 
 }
