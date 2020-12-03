@@ -13,6 +13,8 @@ public class Main {
         break;
       }
 
+
+
       if (isWrongFormat(input)) {
         System.out.println(FORMAT_ERROR_MESSAGE);
         continue;
@@ -26,9 +28,20 @@ public class Main {
   }
 
   private static boolean isWrongFormat(String text) {
-    String wordFormat = "[а-яА-ЯёЁ-]+";
-    String spaceFormat = " +";
-    return !text.matches(wordFormat+spaceFormat+wordFormat+spaceFormat+wordFormat);
+
+    boolean textIsGood = true;
+
+    //количество слов 3-4 (учитываем двойные отчества «Ахмед оглы»)
+    textIsGood = text.matches("([А-Яа-яЁё-]+ ){2}[А-Яа-яЁё-]+( [А-Яа-яЁё-]*)?");
+    //первые три слова - с большой буквы (двойные имена и фамилии - вторая часть тоже с большой буквы, например Салтыков-Щедрин)
+    textIsGood = textIsGood && text.matches("([А-ЯЁ][а-яё]*[- ]){2}[А-ЯЁ].*");
+    //все остальные буквы - маленькие
+    textIsGood = textIsGood && text.matches("([А-ЯЁ][^А-ЯЁ]*){2}[А-ЯЁ][^А-ЯЁ]*");
+    //нет знаков препинания и прочих символов, за исключением тире (двойные имена и фамилии могут содержать)
+    textIsGood = textIsGood && text.matches("[ А-ЯЁа-яЁё-]*");
+
+    return !textIsGood;
+
   }
 
 }
