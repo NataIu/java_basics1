@@ -23,25 +23,20 @@ public class Main {
       String[] parts = input.trim().split("\\s+");
       System.out.println("Фамилия: " + parts[0]);
       System.out.println("Имя: " + parts[1]);
-      System.out.println("Отчество: " + parts[2]);
+      System.out.println("Отчество: " + parts[2]+ (parts.length == 3 ? "": " "+parts[3]));
     }
   }
 
   private static boolean isWrongFormat(String text) {
 
-    boolean textIsGood = true;
+    String pattern1 = "[А-ЯЁ][а-яё]*"; //lastNameFormatPartOne, nameFormatPartOne, secondNameFormatPartOne
+    String pattern2 = "(-[А-ЯЁ][а-яё]*)?"; //lastNameFormatPartTwo, nameFormatPartTwo,
+    String pattern3 ="( [а-яё]*)?"; //secondNameFormatPartOne
 
-    //количество слов 3-4 (учитываем двойные отчества «Ахмед оглы»)
-    textIsGood = text.matches("([А-Яа-яЁё-]+ ){2}[А-Яа-яЁё-]+( [А-Яа-яЁё-]*)?");
-    //первые три слова - с большой буквы (двойные имена и фамилии - вторая часть тоже с большой буквы, например Салтыков-Щедрин)
-    textIsGood = textIsGood && text.matches("([А-ЯЁ][а-яё]*[- ]){2}[А-ЯЁ].*");
-    //все остальные буквы - маленькие
-    textIsGood = textIsGood && text.matches("([А-ЯЁ][^А-ЯЁ]*){2}[А-ЯЁ][^А-ЯЁ]*");
-    //нет знаков препинания и прочих символов, за исключением тире (двойные имена и фамилии могут содержать)
-    textIsGood = textIsGood && text.matches("[ А-ЯЁа-яЁё-]*");
+    String commonPattern = pattern1 + pattern2 + " " + pattern1 + pattern2 + " "+pattern1 + pattern3;
 
-    return !textIsGood;
 
+    return !text.matches(commonPattern);
   }
 
 }
