@@ -2,21 +2,45 @@ public class Hospital {
 
     public static float[] generatePatientsTemperatures(int patientsCount) {
 
-        //TODO: напишите метод генерации массива температур пациентов
+        float[] patientTemperatures = new float[patientsCount];
+        for (int i = 0; i < patientsCount; i++) {
+            patientTemperatures[i] = ((float) Math.round(10* (32 + Math.random() * 8))) /10;
+        }
 
-        return new float[0];
+        return patientTemperatures;
     }
 
     public static String getReport(float[] temperatureData) {
-        /*
-        TODO: Напишите код, который выводит среднюю температуру по больнице,количество здоровых пациентов,
-            а также температуры всех пациентов.
-        */
+
+        StringBuilder stringOfTemperatures = new StringBuilder();
+        float averageTemperature = 0;
+        int countOfHealthyPatients = 0;
+        float minHealthTemperature = (float) 36.2;
+        float maxHealthTemperature = (float) 36.9;
+
+        for (float temperature:temperatureData) {
+
+            if (stringOfTemperatures.length() != 0) {
+                stringOfTemperatures.append(" ");
+            }
+            stringOfTemperatures.append(temperature);
+
+            averageTemperature = averageTemperature +temperature;
+
+            if (Float.compare(temperature,minHealthTemperature)>= 0 &&
+                    Float.compare(maxHealthTemperature,temperature) >= 0){
+                countOfHealthyPatients++;
+            }
+
+        }
+
+        averageTemperature =averageTemperature / temperatureData.length;
+        averageTemperature = ((float) (Math.round(averageTemperature*100)))/100;
 
         String report =
-                "Температуры пациентов: " + 0 +
-                        "\nСредняя температура: " + 0 +
-                        "\nКоличество здоровых: " + 0;
+                "Температуры пациентов: " + stringOfTemperatures.toString() +
+                        "\nСредняя температура: " + averageTemperature +
+                        "\nКоличество здоровых: " + countOfHealthyPatients;
 
         return report;
     }
