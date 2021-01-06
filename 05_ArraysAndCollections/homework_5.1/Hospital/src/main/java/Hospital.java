@@ -1,5 +1,8 @@
 public class Hospital {
 
+    public static final float MIN_HEALTH_TEMPERATURE = (float) 36.2;
+    public static final float MAX_HEALTH_TEMPERATURE = (float) 36.9;
+
     public static float[] generatePatientsTemperatures(int patientsCount) {
 
         float[] patientTemperatures = new float[patientsCount];
@@ -15,8 +18,8 @@ public class Hospital {
         StringBuilder stringOfTemperatures = new StringBuilder();
         float averageTemperature = 0;
         int countOfHealthyPatients = 0;
-        float minHealthTemperature = (float) 36.2;
-        float maxHealthTemperature = (float) 36.9;
+//        float minHealthTemperature = (float) 36.2;
+//        float maxHealthTemperature = (float) 36.9;
 
         for (float temperature:temperatureData) {
 
@@ -27,8 +30,8 @@ public class Hospital {
 
             averageTemperature = averageTemperature +temperature;
 
-            if (Float.compare(temperature,minHealthTemperature)>= 0 &&
-                    Float.compare(maxHealthTemperature,temperature) >= 0){
+            if (Float.compare(temperature,MIN_HEALTH_TEMPERATURE)>= 0 &&
+                    Float.compare(MAX_HEALTH_TEMPERATURE,temperature) >= 0){
                 countOfHealthyPatients++;
             }
 
