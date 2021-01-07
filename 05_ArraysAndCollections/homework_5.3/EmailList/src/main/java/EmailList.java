@@ -1,15 +1,26 @@
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class EmailList {
 
+
+    private TreeSet<String> treeSet = new TreeSet<>();
+    private final static String reg = "[0-9a-z]*@[a-z]*\\.[a-z]*";
+
     public void add(String email) {
-        // TODO: валидный формат email добавляется
+
+        String lowerCaseEmail = email.toLowerCase(Locale.ROOT);
+
+        if (lowerCaseEmail.matches(reg)) {
+            treeSet.add(lowerCaseEmail);
+        } else {
+            System.out.println(Main.WRONG_EMAIL_ANSWER);
+        }
     }
 
+
+
     public List<String> getSortedEmails() {
-        // TODO: возвращается список электронных адресов в алфавитном порядке
-        return Collections.emptyList();
+        return new ArrayList<>(treeSet);
     }
 
 }
