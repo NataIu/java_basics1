@@ -2,8 +2,8 @@ import java.util.*;
 
 public class EmailList {
 
-
-    private TreeSet<String> treeSet = new TreeSet<>();
+    private EmailComparator emailComparator = new EmailComparator();
+    private TreeSet<String> treeSet = new TreeSet<>(emailComparator);
     private final static String reg = "[0-9a-z]*@[a-z]*\\.[a-z]*";
 
     public void add(String email) {

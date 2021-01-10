@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Main {
 
     public static final String WRONG_EMAIL_ANSWER = "Неверный формат email";
-    private static final int emailStartNumber = 4;
+    private static final int EMAIL_START_NUMBER = 4;
 
 
     public static void main(String[] args) {
@@ -27,7 +27,7 @@ public class Main {
                 }
 
             } else if (input.matches("ADD\\s.*")) {
-                String pureEmail = input.substring(emailStartNumber);
+                String pureEmail = input.substring(EMAIL_START_NUMBER);
                 emailList.add(pureEmail);
             }
 
