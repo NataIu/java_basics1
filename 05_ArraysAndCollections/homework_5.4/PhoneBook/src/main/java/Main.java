@@ -1,14 +1,11 @@
 import java.util.Scanner;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class Main {
 
-    private final static String wrongInputMessage = "Неверный формат ввода";
-    private final static String startMessage = "Введите номер, имя или команду:";
-    private final static String successSavingMessage = "Контакт сохранен!";
-    public final static String NAME_PATTERN = "[А-ЯЁ][а-яё]*";
-    public final static String PHONE_PATTERN = "79[0-9]{9}";
+    private final static String WRONG_INPUT_MESSAGE = "Неверный формат ввода";
+    private final static String START_MESSAGE = "Введите номер, имя или команду:";
+    private final static String SUCCESS_SAVING_MESSAGE = "Контакт сохранен!";
 
     public static void main(String[] args) {
 
@@ -17,13 +14,13 @@ public class Main {
 
 
         while (true) {
-            System.out.println(startMessage);
+            System.out.println(START_MESSAGE);
             String input = scanner.nextLine();
             if (input.equals("0")) {
                 break;
             }
 
-            InformationType inputType = findInformationType(input);
+            InformationType inputType = InformationType.findInformationType(input);
             if (inputType == InformationType.LIST) {
                 Set<String> allContacts = phoneBook.getAllContacts();
                 printContacts(allContacts);
@@ -32,7 +29,7 @@ public class Main {
             } else if (inputType == InformationType.PHONE_NUMBER) {
                 processPhoneInput(scanner, phoneBook, input);
             } else {
-                System.out.println(wrongInputMessage);
+                System.out.println(WRONG_INPUT_MESSAGE);
             }
 
         }
@@ -44,11 +41,11 @@ public class Main {
             System.out.println("Такого имени в телефонной книге нет.\n" +
                     "Введите номер телефона для абонента \"" + input + "\":");
             String additionalInput = scanner.nextLine();
-            if (findInformationType(additionalInput) == InformationType.PHONE_NUMBER) {
-                phoneBook.addContact(additionalInput,input);
-                System.out.println(successSavingMessage);
+            if (InformationType.findInformationType(additionalInput) == InformationType.PHONE_NUMBER) {
+                phoneBook.addContact(additionalInput, input);
+                System.out.println(SUCCESS_SAVING_MESSAGE);
             } else {
-                System.out.println(wrongInputMessage);
+                System.out.println(WRONG_INPUT_MESSAGE);
             }
 
         } else {
@@ -63,11 +60,11 @@ public class Main {
                     "Введите имя абонента для номера \"" + input + "\":");
 
             String additionalInput = scanner.nextLine();
-            if (findInformationType(additionalInput) == InformationType.NAME) {
-                phoneBook.addContact(input,additionalInput);
-                System.out.println(successSavingMessage);
+            if (InformationType.findInformationType(additionalInput) == InformationType.NAME) {
+                phoneBook.addContact(input, additionalInput);
+                System.out.println(SUCCESS_SAVING_MESSAGE);
             } else {
-                System.out.println(wrongInputMessage);
+                System.out.println(WRONG_INPUT_MESSAGE);
             }
         } else {
             System.out.println(name);
@@ -78,21 +75,6 @@ public class Main {
         for (String contact : allContacts) {
             System.out.println(contact);
         }
-    }
-
-    private static InformationType findInformationType(String text) {
-
-        InformationType result = InformationType.ANOTHER;
-
-        if (text.equals("LIST")) {
-            result = InformationType.LIST;
-        } else if (text.matches(NAME_PATTERN)) {
-            result = InformationType.NAME;
-        } else if (text.matches(PHONE_PATTERN)) {
-            result = InformationType.PHONE_NUMBER;
-        }
-
-        return result;
     }
 
 

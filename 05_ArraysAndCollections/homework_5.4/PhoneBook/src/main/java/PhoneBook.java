@@ -2,73 +2,82 @@ import java.util.*;
 
 public class PhoneBook {
 
-    private HashMap<String, String> book = new HashMap<>();
-
-    //выбор реализации:
-
-    //Вариант 1: ключ = номер тлф, значение = имя
-    // 79991112233 - Маша
-    // 79991112244 - Маша
-    // 79991112255 - Саша
-    //это удобно, потому что у одного человека может быть несколько номеров,
-    //а один телефон обычно закреплен только за одним человеком
-    //т.е. соответствует логике
-    //минус: неудобно распечатывать, когдадля одного человека ввели несколько наомеров -
-    //они либо будут печататься отдельными строками, либо надо как-то объединять
-    //еще минус: недобно будет получать номер телефона по имени, а это не быстсро
-
-    //Вариант 2: ключ = имя, значение = все введенные номера этого человека через запятую
-    // Маша - 79991112233, 79991112244
-    // Саша - 79991112255
-    //минус: = при вводе тлф для человека, для которого уже есть запись,
-    //нужно не просто добавлять запись, а изменять уже существующую.
-    //минус: уникальность введенных номеров для одного человека нужно контролировать вручную
-    // при обновлении изменении записи с его телефонами
-    //минус: никак не контолируем уникальность введенных номеров телефонов среди разных людей
-    //еще минус: сложно получать номер Имя (ключ) по номеру телефона (значение), а это не быстро. К тому же
-    //телефон здесь - это не чистый телефон, а несколько телефонов в одной строке через запятую
-
-    //Вариант 3: то же самое, что вариант 2, но хранить номера телефонов не в строке через запятую, а
-    //в ArrayList<String> или в Set. получаем те же плюсы/минусы, что и в варианте 2
-
-    //как быстро получать и номер по имени, и имя по номеру, используя один Map не придумала.
-    //а делать  2 кажется странным. Поэтому выберу один из ваиантов выше
-
-    //я выберу вариант 1, т.к. кажется, что он больше соответствует логике реальной телефонной книги
-    //за счет контроля уникальности номеров. И лучше пусть будет более сложная обработка данных для красивой печати
-    //(если это понадобится), но зато более правильная логика хранения
+    private HashMap<String, HashSet<String>> book = new HashMap<>();
 
     public void addContact(String phone, String name) {
         // проверьте корректность формата имени и телефона
         // если такой номер уже есть в списке, то перезаписать имя абонента
-        if (name.matches(Main.NAME_PATTERN) && (phone.matches(Main.PHONE_PATTERN))) {
-            book.put(phone, name);
+        String existingName = getPureNameByPhone(phone);
+
+        if (PhoneBookChecker.isName(name) && PhoneBookChecker.isPhone(phone)) {
+            if (book.containsKey(name)) {
+                HashSet nameSet = book.get(name);
+                nameSet.add(phone);
+                book.put(name, nameSet);
+
+            } else {
+                HashSet<String> nameSet = new HashSet<>();
+                nameSet.add(phone);
+                book.put(name, nameSet);
+            }
+
+        }
+
+        if ((!existingName.isEmpty()) && !(existingName.equals(name))) {
+            deletePhoneFromContact(phone, existingName);
+        }
+    }
+
+    public void deletePhoneFromContact(String phone, String name) {
+        if (book.get(name).size() == 1) {
+            book.remove(name);
+        } else {
+            book.get(name).remove(phone);
         }
     }
 
     public String getNameByPhone(String phone) {
-        // формат одного контакта "Имя - Телефон"
-        // если контакт не найдены - вернуть пустую строку
-        String name = "";
-        if (book.containsKey(phone)) {
-            name = book.get(phone)+" - "+phone;
-        }
+//        // формат одного контакта "Имя - Телефон"
+//        // если контакт не найдены - вернуть пустую строку
 
+        String name = getPureNameByPhone(phone);
+        String tmp = "";
+
+        if (!name.isEmpty()) {
+            tmp = name + " - ";
+            for (String tmpPhone : book.get(name)) {
+                tmp = tmp + tmpPhone + ", ";
+            }
+            tmp = tmp.substring(0, tmp.length() - 2);
+        }
+        return tmp;
+    }
+
+    public String getPureNameByPhone(String phone) {
+//        // формат одного контакта "Имя - Телефон"
+//        // если контакт не найдены - вернуть пустую строку
+        String name = "";
+        for (Map.Entry<String, HashSet<String>> entry : book.entrySet()) {
+            if (entry.getValue().contains(phone)) {
+                name = entry.getKey();
+            }
+        }
         return name;
     }
 
     public Set<String> getPhonesByName(String name) {
         // формат одного контакта "Имя - Телефон"
         // если контакт не найден - вернуть пустой TreeSet
-
         TreeSet<String> nameContacts = new TreeSet<>();
 
-        if (book.containsValue(name)) {
-            for (Map.Entry<String, String> entry : book.entrySet()) {
-                if (entry.getValue().equals(name)) {
-                    nameContacts.add(entry.getValue() + " - " + entry.getKey());
-                }
+        if (book.containsKey(name)) {
+            String tmp = name + " - ";
+
+            for (String phone : book.get(name)) {
+                tmp = tmp + phone + ", ";
             }
+            tmp = tmp.substring(0, tmp.length() - 2);
+            nameContacts.add(tmp);
         }
         return nameContacts;
     }
@@ -79,10 +88,17 @@ public class PhoneBook {
 
         TreeSet<String> allContacts = new TreeSet<>();
 
-        for (Map.Entry<String, String> entry : book.entrySet()) {
-            allContacts.add(entry.getValue() + " - " + entry.getKey());
-        }
+        String tmp = "";
+        for (Map.Entry<String, HashSet<String>> entry : book.entrySet()) {
 
+            tmp = entry.getKey() + " - ";
+            for (String value : entry.getValue()) {
+                tmp = tmp + value + ", ";
+            }
+
+            tmp = tmp.substring(0, tmp.length() - 2);
+            allContacts.add(tmp);
+        }
         return allContacts;
     }
 
