@@ -8,12 +8,16 @@ public class EmailComparator implements Comparator<String> {
         String domen1 = getDomenFromEmail(email1);
         String domen2 = getDomenFromEmail(email2);
 
-        return domen1.compareTo(domen2);
+        if (domen1.equals(domen2)) {
+            return email1.compareTo(email2);
+        } else {
+            return domen1.compareTo(domen2);
+        }
     }
 
     private String getDomenFromEmail(String email) {
         int domenIndex = email.indexOf("@");
-        String domen = email.substring(domenIndex+1);
+        String domen = email.substring(domenIndex + 1);
         return domen;
     }
 }
