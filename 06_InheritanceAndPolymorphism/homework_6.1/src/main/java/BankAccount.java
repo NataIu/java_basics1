@@ -1,15 +1,21 @@
 public class BankAccount {
 
-  public double getAmount() {
-    //TODO: реализуйте метод и удалите todo
-    return 0;
-  }
+    private double amount = 0;
 
-  public void put(double amountToPut) {
-    //TODO: реализуйте метод и удалите todo
-  }
+    public double getAmount() {
+        return amount;
+    }
 
-  public void take(double amountToTake) {
-    //TODO: реализуйте метод и удалите todo
-  }
+    public void put(double amountToPut) {
+        if (Double.compare(amountToPut,0) > 0) {
+            amount = amount + amountToPut;
+        }
+    }
+
+    public void take(double amountToTake) {
+        if ( Double.compare(amount, amountToTake) > 0) {
+            amount = amount - amountToTake;
+        }
+    }
+
 }
