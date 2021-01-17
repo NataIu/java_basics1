@@ -6,10 +6,12 @@ public class BankAccount {
         return amount;
     }
 
-    public void put(double amountToPut) {
+    public boolean put(double amountToPut) {
         if (Double.compare(amountToPut,0) > 0) {
             amount = amount + amountToPut;
+            return true;
         }
+        return false;
     }
 
     public void take(double amountToTake) {
