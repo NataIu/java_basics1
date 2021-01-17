@@ -18,6 +18,11 @@ public class BankAccount {
         }
     }
 
+    public void take(double amountToTake, int comissionPersentage) {
+        double amountWithComission = amountToTake * (100+comissionPersentage)/100;
+        take(amountWithComission);
+    }
+
     public boolean send(BankAccount receiver, double amount) {
 
         boolean result = false;

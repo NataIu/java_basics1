@@ -4,8 +4,7 @@ public class CardAccount extends BankAccount {
 
     @Override
     public void take(double amountToTake) {
-        double amountWithComission = amountToTake * (100+COMMISSION_PERCENTAGE)/100;
-        super.take(amountWithComission);
+        super.take(amountToTake, COMMISSION_PERCENTAGE);
     }
 
 }
