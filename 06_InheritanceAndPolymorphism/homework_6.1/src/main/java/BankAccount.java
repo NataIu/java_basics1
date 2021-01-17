@@ -13,15 +13,20 @@ public class BankAccount {
     }
 
     public void take(double amountToTake) {
+        takeSum(amountToTake);
+    }
+
+    public void take(double amountToTake, int comissionPersentage) {
+        double amountWithComission = amountToTake * (100+comissionPersentage)/100;
+        takeSum(amountWithComission);
+    }
+
+    public void takeSum(double amountToTake) {
         if ( Double.compare(amount, amountToTake) >= 0) {
             amount = amount - amountToTake;
         }
     }
 
-    public void take(double amountToTake, int comissionPersentage) {
-        double amountWithComission = amountToTake * (100+comissionPersentage)/100;
-        take(amountWithComission);
-    }
 
     public boolean send(BankAccount receiver, double amount) {
 
