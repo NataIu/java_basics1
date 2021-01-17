@@ -14,46 +14,46 @@ public class BankAccount {
         return false;
     }
 
-    public void take(double amountToTake) {
-        takeSum(amountToTake);
+    public boolean take(double amountToTake) {
+        return takeSum(amountToTake);
     }
 
-    public void take(double amountToTake, int comissionPersentage) {
+    public boolean take(double amountToTake, int comissionPersentage) {
         double amountWithComission = amountToTake * (100+comissionPersentage)/100;
-        takeSum(amountWithComission);
+        return takeSum(amountWithComission);
     }
 
-    public void takeSum(double amountToTake) {
+    public boolean takeSum(double amountToTake) {
         if ( Double.compare(amount, amountToTake) >= 0) {
             amount = amount - amountToTake;
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
 
     public boolean send(BankAccount receiver, double amount) {
 
-        boolean result = false;
         double firstAmountBeforeOperations = getAmount();
-        double secondAmountBeforeOperations = 0;
 
         //снимем деньги с первого счета
         take(amount);
         if (Double.compare(firstAmountBeforeOperations,getAmount()) == 0) {
             //не получилось снять деньги с первого счета
-            return result;
+            return false;
         }
 
         //положим деньги на второй счет
-        secondAmountBeforeOperations = receiver.getAmount();
-        receiver.put(amount);
-        if (Double.compare(secondAmountBeforeOperations,receiver.getAmount()) == 0) {
+        boolean moneyPutSuccess = receiver.put(amount);
+        if (!moneyPutSuccess) {
             //не получилось положить деньги на второй счет
-            amount =  firstAmountBeforeOperations;
-            return result;
+            this.amount =  firstAmountBeforeOperations;
+            return false;
         }
 
-        result = true;
-        return result;
+        return true;
     }
 
 }

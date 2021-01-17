@@ -17,9 +17,12 @@ public class DepositAccount extends BankAccount {
     }
 
     @Override
-    public void take(double amountToTake) {
+    public boolean take(double amountToTake) {
         if (lastIncome.plusMonths(1).isBefore(LocalDate.now())) {
-            super.take(amountToTake);
+            return super.take(amountToTake);
+        }
+        else {
+            return false;
         }
     }
 

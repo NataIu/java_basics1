@@ -9,7 +9,7 @@ public class Main {
         bankAccount.put(100000);
         System.out.println("first: "+bankAccount.getAmount()+", second: "+secondAccount.getAmount());
 
-        bankAccount.send(secondAccount,100000);
+        bankAccount.send(secondAccount,-10);
         System.out.println("first: "+bankAccount.getAmount()+", second: "+secondAccount.getAmount());
 
 //        bankAccount.put(10000);
