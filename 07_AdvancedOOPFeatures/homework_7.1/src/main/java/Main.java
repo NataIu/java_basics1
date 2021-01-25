@@ -16,14 +16,8 @@ public class Main {
     }
 
     public static void sortBySalaryAndAlphabet(List<Employee> staff) {
-        Collections.sort(staff, (o1, o2) -> {
-            int result = o1.getSalary().compareTo(o2.getSalary());
-            if (result == 0) {
-                result = o1.getName().compareTo(o2.getName());
-            }
-            return result;
-        });
 
-        //TODO Метод должен отсортировать сотрудников по заработной плате и алфавиту.
+        Collections.sort(staff, Comparator.comparingInt(Employee::getSalary).thenComparing(Employee::getName));
+
     }
 }
