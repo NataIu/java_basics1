@@ -1,20 +1,42 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
 
+
     public static void main(String[] args) {
 
-        //Создайте и наймите в компанию: 180 операторов Operator, 80 менеджеров по продажам Manager, 10 топ-менеджеров TopManager.
+        //Создайте и наймите в компанию:  10 топ-менеджеров TopManager.
         Company company = new Company();
-        company.hireAll(EmployeePosition.OPERATOR, 10000.0, 20);
-        company.hireAll(EmployeePosition.OPERATOR, 12000.0, 160);
-        company.hireAll(EmployeePosition.MANAGER, 50000.0, 80);
-        company.hireAll(EmployeePosition.TOP_MANAGER, 100000.0, 10);
+
+        List<Employee> people= new ArrayList<Employee>();
+
+        //наймите в компанию: 180 операторов Operator
+        people = createPeople(EmployeePosition.OPERATOR, 1);
+        company.hire(people.get(0), 10000.0);
+        people = createPeople(EmployeePosition.OPERATOR, 19);
+        company.hireAll(people, 10000.0);
+        people = createPeople(EmployeePosition.OPERATOR, 160);
+        company.hireAll(people, 12000.0);
+
+        //наймите в компанию: 80 менеджеров по продажам Manager
+        people = createPeople(EmployeePosition.MANAGER, 1);
+        company.hire(people.get(0), 50000.0);
+        people = createPeople(EmployeePosition.MANAGER, 79);
+        company.hireAll(people, 60000.0);
+
+        //наймите в компанию:  10 топ-менеджеров TopManager
+        people = createPeople(EmployeePosition.TOP_MANAGER, 1);
+        company.hire(people.get(0), 100000.0);
+        people = createPeople(EmployeePosition.TOP_MANAGER, 9);
+        company.hireAll(people, 110000.0);
+
 
 //        //контроль
 //        System.out.println("Company income: " + company.getIncome());
 //        System.out.println("Employees list: ");
 //        company.printCompanyInformation();
+//        System.out.println("Employees list end.");
 
         //Распечатайте список из 10–15 самых высоких зарплат в компании.
         System.out.println("10 top salary: ");
@@ -36,6 +58,7 @@ public class Main {
 //        System.out.println("Company income: " + company.getIncome());
 //        System.out.println("Employees list: ");
 //        company.printCompanyInformation();
+//        System.out.println("Employees list end.");
 
         System.out.println("AFTER FIRING");
 
@@ -47,31 +70,23 @@ public class Main {
         System.out.println("30 low salary: ");
         Company.printSalaryList(company.getLowestSalaryStaff(30));
 
-
     }
 
-//    public void smallTest() {
-//
-//        Company company = new Company();
-//
-//        company.hire(EmployeePosition.OPERATOR, 10000);
-//        company.hire(EmployeePosition.MANAGER, 60000);
-//        company.hire(EmployeePosition.TOP_MANAGER, 100000);
-//        company.hire(EmployeePosition.OPERATOR, 10000);
-//        company.hire(EmployeePosition.MANAGER, 60000);
-//        company.hire(EmployeePosition.TOP_MANAGER, 100000);
-//        System.out.println("Company income: " + company.getIncome());
-//        System.out.println("--");
-//        company.printCompanyInformation();
-//        System.out.println("--");
-//        Company.printSalaryList(company.getTopSalaryStaff(1));
-//        System.out.println("--");
-//        Company.printSalaryList(company.getTopSalaryStaff(5));
-//        System.out.println("--");
-//        Company.printSalaryList(company.getLowestSalaryStaff(6));
-//        System.out.println("--");
-//        Company.printSalaryList(company.getLowestSalaryStaff(2));
-//
-//    }
+    private static List<Employee> createPeople(EmployeePosition employeePosition, int quantity) {
+
+        List<Employee> people = new ArrayList<Employee>();
+        for (int i = 0; i < quantity; i++) {
+            if (employeePosition == EmployeePosition.TOP_MANAGER) {
+                people.add(new TopManager());
+            } else if (employeePosition == EmployeePosition.MANAGER) {
+                people.add(new Manager());
+            } else {
+                //operator
+                people.add(new Operator());
+            }
+
+        }
+        return people;
+    }
 
 }

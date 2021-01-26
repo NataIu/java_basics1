@@ -7,8 +7,9 @@ public class Manager implements Employee {
     private double fixSalary;
     private double profitForCompany;
 
-    public Manager(double fixSalary) {
-        this.fixSalary = fixSalary;
+    @Override
+    public void setHiringInformation(double salary, Company company) {
+        this.fixSalary = salary;
         setManagersProfitForCompany();
     }
 
@@ -16,6 +17,7 @@ public class Manager implements Employee {
     public double getMonthSalary() {
         return fixSalary +  ((double) Math.round(getProfitForCompany() * BONUS_PERSENT))/100;
     }
+
 
     private void setManagersProfitForCompany() {
         profitForCompany = ( (double) Math.round( 100*(MIN_INCOME + (MAX_INCOME - MIN_INCOME) * Math.random())))/100;

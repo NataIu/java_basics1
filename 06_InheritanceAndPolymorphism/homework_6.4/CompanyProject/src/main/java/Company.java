@@ -13,23 +13,15 @@ public class Company {
         return employees.get(employeeIndex);
     }
 
-    public void hire(EmployeePosition employeePosition, double salary) {
-
-        Employee employee;
-        if (employeePosition == EmployeePosition.TOP_MANAGER) {
-            employee = new TopManager(salary, this);
-        } else if (employeePosition == EmployeePosition.MANAGER) {
-            employee = new Manager(salary);
-        } else {
-            //operator
-            employee = new Operator(salary);
-        }
+    public void hire(Employee employee, double salary) {
+        employee.setHiringInformation(salary, this);
         employees.add(employee);
     }
 
-    public void hireAll(EmployeePosition employeePosition, double salary, int quantity) {
-        for (int i = 0; i < quantity; i++) {
-            hire(employeePosition, salary);
+    public void hireAll(List<Employee> employees, double salary) {
+
+        for (Employee employee: employees) {
+            hire(employee, salary);
         }
     }
 
@@ -70,16 +62,12 @@ public class Company {
     public List<Employee> getSomeSalaryStaff(int minNumber, int maxNumber){
 
         List listSalaryStaff = new ArrayList<Employee>();
-        Collections.sort(employees,new EmployeeComparator());
-
+        Collections.sort(employees,Comparator.comparing(Employee::getMonthSalary).reversed());
         for (int i = minNumber; i < maxNumber; i++) {
             listSalaryStaff.add(employees.get(i));
         }
-
         return listSalaryStaff;
-
     }
-
 
     public static void printSalaryList(List<Employee> salaryList) {
         for (Employee employee : salaryList) {

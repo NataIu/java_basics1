@@ -6,14 +6,17 @@ public class TopManager implements Employee{
     private double fixSalary;
     private Company company;
 
-    public TopManager(double fixSalary, Company company) {
-        this.fixSalary = fixSalary;
-        this.company = company;
-    }
+    public TopManager() {}
 
     @Override
     public double getMonthSalary() {
         return fixSalary+ (Double.compare(company.getIncome(),MIN_COMPANY_INCOME) > 0 ? fixSalary*BONUS_PERSENT/100: 0 );
+    }
+
+    @Override
+    public void setHiringInformation(double salary, Company company) {
+        this.fixSalary = salary;
+        this.company = company;
     }
 
 }
