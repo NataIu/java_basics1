@@ -1,4 +1,7 @@
-import java.util.List;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 
 public class Main {
 
@@ -11,8 +14,19 @@ public class Main {
     }
 
     public static Employee findEmployeeWithHighestSalary(List<Employee> staff, int year) {
-        //TODO Метод должен вернуть сотрудника с максимальной зарплатой среди тех,
-        // кто пришёл в году, указанном в переменной year
+
+        Date startOfYear = Date.from(LocalDate.of(year, 1, 1).atStartOfDay()
+                .atZone(ZoneId.systemDefault()).toInstant());
+
+        Date startOfNextYear = Date.from(LocalDate.of(year+1, 1, 1).atStartOfDay()
+                .atZone(ZoneId.systemDefault()).toInstant());
+
+        Optional optional = staff.stream().filter(s -> s.getWorkStart().before(startOfNextYear))
+                .filter(s -> s.getWorkStart().after(startOfYear) || s.getWorkStart().equals(startOfYear))
+                .max(Comparator.comparingInt(Employee::getSalary));
+        if (optional.isPresent()) {
+            return (Employee) optional.get();
+        }
         return null;
     }
 }
