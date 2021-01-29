@@ -1,4 +1,5 @@
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
@@ -15,18 +16,9 @@ public class Main {
 
     public static Employee findEmployeeWithHighestSalary(List<Employee> staff, int year) {
 
-        Date startOfYear = Date.from(LocalDate.of(year, 1, 1).atStartOfDay()
-                .atZone(ZoneId.systemDefault()).toInstant());
+        return staff.stream()
+                .filter(s -> LocalDate.ofInstant(s.getWorkStart().toInstant(), ZoneId.systemDefault()).getYear() == year)
+                .max(Comparator.comparingInt(Employee::getSalary)).orElse(null);
 
-        Date startOfNextYear = Date.from(LocalDate.of(year+1, 1, 1).atStartOfDay()
-                .atZone(ZoneId.systemDefault()).toInstant());
-
-        Optional optional = staff.stream().filter(s -> s.getWorkStart().before(startOfNextYear))
-                .filter(s -> s.getWorkStart().after(startOfYear) || s.getWorkStart().equals(startOfYear))
-                .max(Comparator.comparingInt(Employee::getSalary));
-        if (optional.isPresent()) {
-            return (Employee) optional.get();
-        }
-        return null;
     }
 }
