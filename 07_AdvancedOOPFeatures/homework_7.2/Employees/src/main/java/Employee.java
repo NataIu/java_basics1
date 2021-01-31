@@ -1,10 +1,10 @@
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 
 public class Employee {
 
@@ -18,7 +18,7 @@ public class Employee {
     this.workStart = workStart;
   }
 
-  public static List<Employee> loadStaffFromFile(String path) {
+  public static List<Employee> loadStaffFromFile_old(String path)  {
     List<Employee> staff = new ArrayList<>();
     try {
       List<String> lines = Files.readAllLines(Paths.get(path));
@@ -30,11 +30,39 @@ public class Employee {
         }
         String dateFormat = "dd.MM.yyyy";
         staff.add(new Employee(
-            fragments[0],
-            Integer.parseInt(fragments[1]),
-            (new SimpleDateFormat(dateFormat)).parse(fragments[2])
+                fragments[0],
+                Integer.parseInt(fragments[1]),
+                (new SimpleDateFormat(dateFormat)).parse(fragments[2])
         ));
       }
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    return staff;
+  }
+
+  public static List<Employee> loadStaffFromFile(String path) {
+    List<Employee> staff = new ArrayList<>();
+    try {
+      String dateFormat = "dd.MM.yyyy";
+
+      Files.readAllLines(Paths.get(path)).stream()
+              .filter(line -> StringUtils.countMatches(line, '\t') != 2)
+              .forEach(line -> System.out.println("Wrong line: " + line));
+
+      staff = Files.readAllLines(Paths.get(path)).stream()
+              .map(line->line.split("\t"))
+              .filter(line -> line.length == 3)
+              .map(line -> {
+                try {
+                  return new Employee(line[0], Integer.parseInt(line[1]),(new SimpleDateFormat(dateFormat)).parse(line[2]));
+                } catch (ParseException e) {
+                  e.printStackTrace();
+                }
+                return null;
+              })
+              .collect(Collectors.toList());
+
     } catch (Exception ex) {
       ex.printStackTrace();
     }
