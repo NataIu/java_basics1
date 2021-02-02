@@ -21,12 +21,13 @@ public class Main {
             if (tokens[0].equals("add")) {
                 try {
                     executor.addCustomer(tokens[1]);
-                } catch (IllegalArgumentException e) {
+                } catch (ArrayIndexOutOfBoundsException | IllegalCommandException | IncorrectEmailException |IncorrectPhoneNumberException e) {
                     System.out.println(e.getMessage());
                 }
             } else if (tokens[0].equals("list")) {
                 executor.listCustomers();
             } else if (tokens[0].equals("remove")) {
+
                 try {
                     executor.removeCustomer(tokens[1]);
                 }
