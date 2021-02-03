@@ -4,7 +4,6 @@ import lombok.Setter;
 public class IncorrectEmailException extends Exception{
 
 @Getter
-@Setter
 String email;
 
     IncorrectEmailException(String email) {

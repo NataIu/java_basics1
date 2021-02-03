@@ -9,7 +9,7 @@ public class Main {
             COMMAND_EXAMPLES;
     private static final String helpText = "Command examples:\n" + COMMAND_EXAMPLES;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IncorrectPhoneNumberException, IllegalCommandException, IncorrectEmailException {
         Scanner scanner = new Scanner(System.in);
         CustomerStorage executor = new CustomerStorage();
 
@@ -19,22 +19,17 @@ public class Main {
 
 
             if (tokens[0].equals("add")) {
-                try {
-                    executor.addCustomer(tokens[1]);
-                } catch (ArrayIndexOutOfBoundsException | IllegalCommandException | IncorrectEmailException |IncorrectPhoneNumberException e) {
-                    System.out.println(e.getMessage());
+                if (tokens.length <2) {
+                    throw new IllegalCommandException("add");
                 }
+                 executor.addCustomer(tokens[1]);
             } else if (tokens[0].equals("list")) {
                 executor.listCustomers();
             } else if (tokens[0].equals("remove")) {
-
-                try {
-                    executor.removeCustomer(tokens[1]);
+                if (tokens.length <2) {
+                    throw new IllegalCommandException("remove");
                 }
-                catch (ArrayIndexOutOfBoundsException e) {
-                    System.out.println("Command 'remove' need arguments.");
-                }
-
+                executor.removeCustomer(tokens[1]);
             } else if (tokens[0].equals("count")) {
                 System.out.println("There are " + executor.getCount() + " customers");
             } else if (tokens[0].equals("help")) {

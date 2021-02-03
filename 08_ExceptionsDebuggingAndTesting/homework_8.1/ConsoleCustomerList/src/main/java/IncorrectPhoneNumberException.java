@@ -4,7 +4,6 @@ import lombok.Setter;
 public class IncorrectPhoneNumberException extends Exception{
 
     @Getter
-    @Setter
     String phoneNumber;
 
     IncorrectPhoneNumberException(String phoneNumber) {

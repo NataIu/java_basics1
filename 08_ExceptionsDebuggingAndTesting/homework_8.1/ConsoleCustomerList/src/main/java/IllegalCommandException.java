@@ -4,7 +4,6 @@ import lombok.Setter;
 public class IllegalCommandException extends Exception {
 
     @Getter
-    @Setter
     String commandName;
 
     IllegalCommandException(String commandName) {
@@ -19,7 +18,11 @@ public class IllegalCommandException extends Exception {
         if (commandName.toLowerCase().equals("add")) {
             message = "Wrong format for command \"" + commandName + "\". Correct format: add Василий Петров " +
                     "vasily.petrov@gmail.com +79215637722";
-        } else {
+        }
+        else if (commandName.toLowerCase().equals("remove")) {
+            message = "Wrong format for command \"" + commandName + "\". Correct format: remove Василий Петров";
+        }
+        else {
             message = super.getMessage();
         }
 
