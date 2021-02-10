@@ -1,10 +1,20 @@
 
 import java.util.Scanner;
+import org.apache.logging.log4j.*;
 
 public class Main {
+
+    public static Logger logger;
+    private static final String BYTES = " б";
+    private static final String KILOBYTES = " Кб";
+    private static final String MEGABYTES = " Мб";
+    private static final String GIGABYTES = " Гб";
+
     public static void main(String[] args)  {
 
-//        получать через консоль путь от пользователя до папки;
+        logger = LogManager.getRootLogger();
+
+        //        получать через консоль путь от пользователя до папки;
         Scanner scanner = new Scanner(System.in);
         String fileName = scanner.nextLine();
 
@@ -17,16 +27,16 @@ public class Main {
 
     private static String sizeToText(long commonSize) {
         if (commonSize < 1024 ) {
-            return ""+commonSize+" б";
+            return ""+commonSize+BYTES;
         }
         else  if (commonSize < 1024*1024 ) {
-            return ""+commonSize/1024+" Кб";
+            return ""+commonSize/1024+KILOBYTES;
         }
         else  if (commonSize < 1024*1024*1024 ) {
-            return ""+commonSize/1024/1024+" Мб";
+            return ""+commonSize/1024/1024+MEGABYTES;
         }
         else {
-            return ""+commonSize/1024/1024/1024+" Гб";
+            return ""+commonSize/1024/1024/1024+GIGABYTES;
         }
     }
 }

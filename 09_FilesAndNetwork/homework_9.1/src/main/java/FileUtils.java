@@ -1,3 +1,5 @@
+import org.apache.logging.log4j.Level;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,14 +26,14 @@ public class FileUtils {
                             try {
                                 return Files.size(path1);
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                Main.logger.log(Level.ERROR, e.getMessage());
                             }
                             return null;
                         })
                         .reduce(Long::sum)
-                        .orElseGet(null);
+                        .orElseGet(()->0L);
             } catch (IOException e) {
-                e.printStackTrace();
+                Main.logger.log(Level.ERROR, e.getMessage());
             }
         }
         return result;
