@@ -1,10 +1,14 @@
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class FileUtils {
+
+    static Logger logger = LogManager.getLogger(FileUtils.class);
 
     public static long calculateFolderSize(String path)  {
 
@@ -16,7 +20,6 @@ public class FileUtils {
         //программа должна перехватывать все исключения, возникающие при ошибках чтения файлов и папок,
         // и выводить сообщение об ошибке с трассировкой стека (stack trace).
 
-
         Path dirPath = Path.of(path);
         if (Files.isDirectory(dirPath)) {
             try {
@@ -26,14 +29,14 @@ public class FileUtils {
                             try {
                                 return Files.size(path1);
                             } catch (IOException e) {
-                                Main.logger.log(Level.ERROR, e.getMessage());
+                                logger.error(e.getMessage());
                             }
                             return null;
                         })
                         .reduce(Long::sum)
-                        .orElseGet(()->0L);
+                        .orElse(0L);
             } catch (IOException e) {
-                Main.logger.log(Level.ERROR, e.getMessage());
+                logger.error(e.getMessage());
             }
         }
         return result;
