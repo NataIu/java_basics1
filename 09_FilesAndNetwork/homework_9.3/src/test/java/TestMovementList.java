@@ -24,10 +24,7 @@ public class TestMovementList {
     }
 
     private String getCsvFilenamePath() {
-//        return new File(this.getClass().getResource(CSV_FILENAME).getPath()).getAbsolutePath();
-        return "src/test/resources/"+CSV_FILENAME;
-
-
+        return new File(this.getClass().getResource(CSV_FILENAME).getPath()).getAbsolutePath();
     }
 
 }

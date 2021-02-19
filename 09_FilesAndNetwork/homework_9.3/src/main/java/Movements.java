@@ -27,12 +27,11 @@ public class Movements {
     }
 
     public double getExpenseSum() {
-        return bankStatements.stream().map(s->s.getOutcome()).reduce((o1,o2)->(o1+o2)).orElse(0d);
+        return bankStatements.stream().map(s -> s.getOutcome()).reduce((o1, o2) -> (o1 + o2)).orElse(0d);
     }
 
     public double getIncomeSum() {
-        return bankStatements.stream().map(s->s.getIncome()).reduce((o1,o2)->(o1+o2)).orElse(0d);
-
+        return bankStatements.stream().map(s -> s.getIncome()).reduce((o1, o2) -> (o1 + o2)).orElse(0d);
     }
 
     private void parseFile(String filePath) {
@@ -42,13 +41,11 @@ public class Movements {
 
             CSVParser parser = new CSVParserBuilder()
                     .withSeparator(',')
-                    .withQuoteChar('"')
-//                    .withIgnoreQuotations(true)
                     .build();
 
             CSVReader csvReader = new CSVReaderBuilder(reader)
                     .withSkipLines(1)
-                        .withCSVParser(parser)
+                    .withCSVParser(parser)
                     .build();
 
             ColumnPositionMappingStrategy mappingStrategy = new ColumnPositionMappingStrategy();

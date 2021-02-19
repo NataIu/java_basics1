@@ -35,14 +35,33 @@ public class BankStatement {
     private String description;//Описание операции // например, "548673++++++1028    809216  /RU/CARD2CARD ALFA_MOBILE>MOSCOW          31.05.17 31.05.17 1500.00       RUR MCC6536"
 
     @CsvBindByPosition(position = 6)
+    private String incomeString;//Приход // например, "1500"
     private double income;//Приход // например, "1500"
 
     @CsvBindByPosition(position = 7)
+    private String outcomeString;//Расход // например, "0"
     private double outcome;//Расход // например, "0"
 
-    public void setTransactionDateString(String transacyionDateString) {
-        this.transactionDateString = transacyionDateString;
-        Date date = parseDate(transacyionDateString);
+    public void setIncomeString(String incomeString) {
+        this.incomeString = incomeString;
+        double value = convertValueToDouble(incomeString);
+        setIncome(value);
+    }
+
+    public void setOutcomeString(String outcomeString) {
+        this.outcomeString = outcomeString;
+        double value = convertValueToDouble(outcomeString);
+        setOutcome(value);
+    }
+
+    private double convertValueToDouble(String incomeString) {
+        //т.к. не число в формате "100,0" автоматом не преобразуется в double, то проделаем это вручную
+        return Double.valueOf(incomeString.replaceAll(",","."));
+    }
+
+    public void setTransactionDateString(String transactionDateString) {
+        this.transactionDateString = transactionDateString;
+        Date date = parseDate(transactionDateString);
         setTransactionDate(date);
     }
 
