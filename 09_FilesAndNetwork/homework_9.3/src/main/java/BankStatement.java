@@ -1,4 +1,3 @@
-import com.opencsv.bean.CsvBindByPosition;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -7,6 +6,7 @@ import java.beans.Transient;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -15,41 +15,34 @@ import java.util.Locale;
 @ToString
 public class BankStatement {
 
-    @CsvBindByPosition(position = 0)
     private String accountType;//Тип счёта // например, "Текущий счёт"
-
-    @CsvBindByPosition(position = 1)
     private String accountNumber;//Номер счета // например, "40817813206170024534"
-
-    @CsvBindByPosition(position = 2)
     private String currency;//Валюта // например, "RUR"
-
-    @CsvBindByPosition(position = 3)
-    private String transactionDateString;//Дата операции // например, "31.05.17"
     private Date transactionDate;//Дата операции // например, "31.05.17"
-
-    @CsvBindByPosition(position = 4)
     private String transactionReference;//Референс проводки // например, "CRD_1U34U7"
-
-    @CsvBindByPosition(position = 5)
     private String description;//Описание операции // например, "548673++++++1028    809216  /RU/CARD2CARD ALFA_MOBILE>MOSCOW          31.05.17 31.05.17 1500.00       RUR MCC6536"
-
-    @CsvBindByPosition(position = 6)
-    private String incomeString;//Приход // например, "1500"
     private double income;//Приход // например, "1500"
-
-    @CsvBindByPosition(position = 7)
-    private String outcomeString;//Расход // например, "0"
     private double outcome;//Расход // например, "0"
 
+    public BankStatement(ArrayList<String> fragments) {
+        setAccountType(fragments.get(0));
+        setAccountNumber(fragments.get(1));
+        setCurrency(fragments.get(2));
+        setTransactionDateString(fragments.get(3));
+        setTransactionReference(fragments.get(4));
+        setDescription(fragments.get(5));
+        setIncomeString(fragments.get(6));
+        setOutcomeString(fragments.get(7));
+    }
+
+
+
     public void setIncomeString(String incomeString) {
-        this.incomeString = incomeString;
-        double value = convertValueToDouble(incomeString);
+          double value = convertValueToDouble(incomeString);
         setIncome(value);
     }
 
     public void setOutcomeString(String outcomeString) {
-        this.outcomeString = outcomeString;
         double value = convertValueToDouble(outcomeString);
         setOutcome(value);
     }
@@ -60,7 +53,6 @@ public class BankStatement {
     }
 
     public void setTransactionDateString(String transactionDateString) {
-        this.transactionDateString = transactionDateString;
         Date date = parseDate(transactionDateString);
         setTransactionDate(date);
     }
