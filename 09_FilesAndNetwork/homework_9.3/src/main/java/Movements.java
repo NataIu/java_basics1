@@ -2,7 +2,10 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class Movements {
@@ -17,11 +20,26 @@ public class Movements {
     }
 
     public double getExpenseSum() {
-        return bankStatements.stream().map(s -> s.getOutcome()).reduce((o1, o2) -> (o1 + o2)).orElse(0d);
+        return bankStatements.stream().map(BankStatement::getOutcome).reduce(0.0, Double::sum);
     }
 
     public double getIncomeSum() {
-        return bankStatements.stream().map(s -> s.getIncome()).reduce((o1, o2) -> (o1 + o2)).orElse(0d);
+        return bankStatements.stream().map(BankStatement::getIncome).reduce(0.0, Double::sum);
+    }
+
+    public HashMap<String, Double> getOutcomeSumByCompanies() {
+        StringBuilder builder = new StringBuilder();
+        HashMap<String, Double> companiesOutcome = new HashMap<>();
+        bankStatements.stream().forEach(s -> {
+            Double currentSum = 0d;
+            String currentOrganisationName = s.getOrganisationName();
+            if (companiesOutcome.containsKey(currentOrganisationName)) {
+                currentSum = companiesOutcome.get(currentOrganisationName).doubleValue();
+            }
+            companiesOutcome.put(s.getOrganisationName(), currentSum + s.getOutcome());
+        });
+
+        return companiesOutcome;
     }
 
     private void parseFile(String filePath) {
@@ -45,35 +63,24 @@ public class Movements {
         convertStringArrayToBankStatement(fragments);
     }
 
-    private ArrayList<String> parseLineToStringArray(String line) throws IncorrectFieldsQuantityException {
-        ArrayList<String> fragments = new ArrayList<>();
+    private  ArrayList<String> parseLineToStringArray(String line) throws IncorrectFieldsQuantityException {
+        String reg = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";
+        String[] splittedData  = line.split(reg);
 
-        while (line.length() > 0) {
-            String tmp = "";
-            int index1 = 0;
-            int index2 = 0;
-            if (QUOTATION_SYMBOL.equals(line.charAt(0))) {
-                line = line.substring(1);
-                index1 = line.indexOf(QUOTATION_SYMBOL);
-                index2 = Math.min(index1+2, line.length());
-                tmp = line.substring(0, index1);
-                line = line.substring(index2);
-            } else {
-                index1 = line.indexOf(SEPARATOR_SYMBOL);
-                if (index1 < 0) {
-                    index1 = line.length();
-                 }
-                index2 = Math.min(index1+1, line.length());
-                tmp = line.substring(0, index1);
-                line = line.substring(index2);
-            }
-            fragments.add(tmp);
-        }
+        List fragmentsList = ((ArrayList<String>) Arrays.stream(splittedData)
+                .map(s -> {
+                    if (s.charAt(0) == '"' && s.charAt(s.length() - 1) == '"') {
+                        s = s.substring(1, s.length() - 1);
+                    }
+                    return s;
+                })
+                .collect(Collectors.toList()));
+        ArrayList<String> fragments = new ArrayList<>(fragmentsList);
 
         return fragments;
     }
 
-    private void checkLineAsStringArray(String line, ArrayList<String> fragments) throws IncorrectFieldsQuantityException {
+    private void checkLineAsStringArray(String line,ArrayList<String> fragments) throws IncorrectFieldsQuantityException {
 
         if (fragments.size() != EXPECTED_FIELDS_QUANTITY) {
             throw new IncorrectFieldsQuantityException(line, EXPECTED_FIELDS_QUANTITY);

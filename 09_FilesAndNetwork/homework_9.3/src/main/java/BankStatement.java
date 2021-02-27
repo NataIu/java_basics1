@@ -21,6 +21,7 @@ public class BankStatement {
     private String description;//Описание операции // например, "548673++++++1028    809216  /RU/CARD2CARD ALFA_MOBILE>MOSCOW          31.05.17 31.05.17 1500.00       RUR MCC6536"
     private double income;//Приход // например, "1500"
     private double outcome;//Расход // например, "0"
+    private String organisationName; //автоматически получаем по описанию операции
 
     public BankStatement(ArrayList<String> fragments) {
         setAccountType(fragments.get(0));
@@ -34,9 +35,23 @@ public class BankStatement {
     }
 
 
+    public void setDescription(String description) {
+        this.description = description;
+        this.organisationName = getOrganisationNameFromDescription(description);
+    }
+
+    private String getOrganisationNameFromDescription(String description) {
+        String name = "";
+        int beginIndex = (description.indexOf("/") == -1) ? description.indexOf("\\") : description.indexOf("/");
+        name = description.substring(beginIndex);
+        if (name.indexOf("  ") > 0) {
+            name = name.substring(0, name.indexOf("  "));
+        }
+        return name;
+    }
 
     public void setIncomeString(String incomeString) {
-          double value = convertValueToDouble(incomeString);
+        double value = convertValueToDouble(incomeString);
         setIncome(value);
     }
 
@@ -47,7 +62,7 @@ public class BankStatement {
 
     private double convertValueToDouble(String incomeString) {
         //т.к. не число в формате "100,0" автоматом не преобразуется в double, то проделаем это вручную
-        return Double.valueOf(incomeString.replaceAll(",","."));
+        return Double.valueOf(incomeString.replaceAll(",", "."));
     }
 
     public void setTransactionDateString(String transactionDateString) {
