@@ -31,6 +31,14 @@ public class Main {
 
         doc.select(IMAGE_TAG).stream()
                 .map(s -> s.attr("abs:src"))
+                .filter(s -> {
+                    try {
+                        return ((new URL(s)).openConnection().getContentType().matches(".*image.*"));
+                    } catch (IOException e) {
+                        logger.error(e.getMessage());
+                    }
+                    return false;
+                })
                 .map(s -> downloadFile(s))
                 .forEach(System.out::println);
 
@@ -44,8 +52,7 @@ public class Main {
             name = remoteFilePath.substring(index, remoteFilePath.length());
             name = name.replaceAll("\\?", ""); //т.к. названия некоых карттинок его содержат
 
-            URL url = null;
-            url = new URL(remoteFilePath);
+            URL url = new URL(remoteFilePath);
             InputStream in = url.openStream();
 
             if (! Files.exists(Path.of(FOLDER))) {
