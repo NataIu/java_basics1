@@ -1,9 +1,10 @@
 import core.Line;
 import core.Station;
-import netscape.javascript.JSObject;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONStreamAware;
 import org.json.simple.parser.JSONParser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,18 +21,23 @@ import java.util.*;
 public class Main {
 
     private static final String MOS_METRO_PATH = "https://www.moscowmap.ru/metro.html#lines";
-    public static HashMap<String, Line> linesList = new HashMap<String, Line>();
-    public static HashMap<String, Line> linesListFromJson= new HashMap<String, Line>();
+    public static HashMap<String, Line> linesListFromSite = new HashMap<String, Line>();
+    public static HashMap<String, Line> linesListFromJson = new HashMap<String, Line>();
     private static final String LOCAL_FILE_PATH = "myFiles/metro.json";
+    private static Logger logger;
+
 
     public static void main(String[] args) {
-        getMetroSchemeFromWebSite(MOS_METRO_PATH);
-        saveMetroSchemeTJsonFile(LOCAL_FILE_PATH);
+
+        logger = LogManager.getRootLogger();
+
+        getMetroSchemeFromWebSite();
+        saveMetroSchemeTJsonFile();
         getStationsNumberOnLine();
 
     }
 
-    public static void getMetroSchemeFromWebSite(String path) {
+    public static void getMetroSchemeFromWebSite() {
         //1. Получает HTML-код страницы «Список станций Московского метрополитена» https://www.moscowmap.ru/metro.html#lines с помощью библиотеки jsoup.
         //2. Парсит полученную страницу и получает из неё:
         //Линии московского метро (получаете имя линии, номер линии, цвет парсить не надо).
@@ -41,9 +47,9 @@ public class Main {
         String stationsDataPath = "div.js-metro-stations.t-metrostation-list-table";
         Document doc = null;
         try {
-            doc = Jsoup.connect(path).maxBodySize(0).get();
+            doc = Jsoup.connect(MOS_METRO_PATH).maxBodySize(0).get();
         } catch (IOException e) {
-//            logger.error(e.getMessage());
+            logger.error(e.getMessage());
         }
 
         Elements lines = doc.select(linesDataPath);
@@ -52,13 +58,13 @@ public class Main {
                     String lineNumber = s.attributes().get("data-line");
                     String lineName = s.childNodes().get(0).toString();
                     Line line = new Line(lineNumber, lineName);
-                    linesList.put(lineNumber, line);
+                    linesListFromSite.put(lineNumber, line);
                 });
 
         Elements linesWithStations = doc.select(stationsDataPath);
         for (Element lineWithStations : linesWithStations) {
             String lineNumber = lineWithStations.attr("data-line");
-            Line currentLine = linesList.get(lineNumber);
+            Line currentLine = linesListFromSite.get(lineNumber);
             lineWithStations.children().stream().forEach(s -> {
                 String stationName = s.children().get(0).children().get(1).text();
                 Station station = new Station(stationName, currentLine);
@@ -68,35 +74,34 @@ public class Main {
 
     }
 
-    public static void saveMetroSchemeTJsonFile(String path) {
+    public static void saveMetroSchemeTJsonFile() {
         //3. Создаёт и записывает на диск JSON-файл со списком станций по линиям и списком линий по формату JSON-файла из проекта SPBMetro (файл map.json).
         JSONObject jsonObject = new JSONObject();
 
         JSONObject jsonObjectStations = new JSONObject();
         JSONArray jsonObjectLinesArray = new JSONArray();
 
-        for (Map.Entry<String, Line> lineEntry: linesList.entrySet()) {
+        for (Map.Entry<String, Line> lineEntry : linesListFromSite.entrySet()) {
             JSONArray stationsListArray = new JSONArray();
             lineEntry.getValue().getStations().stream()
-                    .forEach(s-> stationsListArray.add(s.getName()));
-            jsonObjectStations.put(lineEntry.getValue().getNumber(),stationsListArray);
+                    .forEach(s -> stationsListArray.add(s.getName()));
+            jsonObjectStations.put(lineEntry.getValue().getNumber(), stationsListArray);
 
             JSONObject lineNumberObject = new JSONObject();
-            lineNumberObject.put("number",lineEntry.getValue().getNumber());
-            lineNumberObject.put("name",lineEntry.getValue().getName());
+            lineNumberObject.put("number", lineEntry.getValue().getNumber());
+            lineNumberObject.put("name", lineEntry.getValue().getName());
 
             jsonObjectLinesArray.add(lineNumberObject);
 
         }
-        jsonObject.put("stations",jsonObjectStations);
-        jsonObject.put("lines",jsonObjectLinesArray);
-        //список линий
+        jsonObject.put("stations", jsonObjectStations);
+        jsonObject.put("lines", jsonObjectLinesArray);
 
-        try ( BufferedWriter writer = Files.newBufferedWriter( Path.of(path))) {
-              writer.write(jsonObject.toJSONString());
-              writer.flush();
+        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(LOCAL_FILE_PATH))) {
+            writer.write(jsonObject.toJSONString());
+            writer.flush();
         } catch (IOException e) {
-//            e.printStackTrace();
+            logger.error(e.getMessage());
         }
 
         System.out.println(jsonObject);
@@ -116,11 +121,10 @@ public class Main {
             JSONObject stationsObject = (JSONObject) jsonData.get("stations");
             parseStations(stationsObject);
 
+            linesListFromJson.entrySet().stream().forEach(s -> System.out.println(s.getValue().getName() + ": " + s.getValue().getStations().size()));
 
-            linesListFromJson.entrySet().stream().forEach(s-> System.out.println(s.getValue().getName()+": "+s.getValue().getStations().size()));
-
-        } catch (Exception ex) {
-//            ex.printStackTrace();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
         }
 
 
@@ -133,14 +137,13 @@ public class Main {
                     (String) lineJsonObject.get("number"),
                     (String) lineJsonObject.get("name")
             );
-            linesListFromJson.put((String) lineJsonObject.get("number"),line);
+            linesListFromJson.put((String) lineJsonObject.get("number"), line);
         });
     }
 
     private static void parseStations(JSONObject stationsObject) {
         stationsObject.keySet().forEach(lineNumberObject ->
         {
-
             String lineNumber = (String) lineNumberObject;
             Line line = linesListFromJson.get(lineNumber);
             JSONArray stationsArray = (JSONArray) stationsObject.get(lineNumberObject);
@@ -158,8 +161,8 @@ public class Main {
         try {
             List<String> lines = Files.readAllLines(Paths.get(LOCAL_FILE_PATH));
             lines.forEach(line -> builder.append(line));
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
         }
         return builder.toString();
     }
