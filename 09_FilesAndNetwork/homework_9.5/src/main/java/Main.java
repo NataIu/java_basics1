@@ -33,7 +33,8 @@ public class Main {
         getMetroSchemeFromWebSite();
         saveMetroSchemeTJsonFile();
         readStationsFromJsonFile();
-        printStationsNumberOnLine();
+        printStationsQuantityOnLine();
+        printConnectionsQuantity();
 
     }
 
@@ -52,6 +53,7 @@ public class Main {
             logger.error(e.getMessage());
         }
 
+        //прочитаем с сайта все линии и создадим их как объекты
         Elements lines = doc.select(linesDataPath);
         lines.stream()
                 .forEach(s -> {
@@ -62,21 +64,50 @@ public class Main {
                 });
 
         Elements linesWithStations = doc.select(stationsDataPath);
+        //прочитаем с сайта все станции и создадим их как объекты
         for (Element lineWithStations : linesWithStations) {
             String lineNumber = lineWithStations.attr("data-line");
             Line currentLine = stationIndexFromSite.getLine(lineNumber);
             lineWithStations.children().stream().forEach(s -> {
+
                 String stationName = s.children().get(0).children().get(1).text();
                 Station station = new Station(stationName, currentLine);
                 stationIndexFromSite.addStation(station);
-
-                //переходы можно обраюотать тут же
-                //<span class="t-icon-metroln ln-2" title="переход на станцию «Театральная» Замоскворецкой линии"></span>
-                //отсюда берем номер линии  (из "t-icon-metroln ln-..." )и название станции из  title
-                //мне нужно: s.children().get(0).children().get(>1)
             });
+        }
 
+        //прочитаем с сайта все переходы между линиями и  создадим их как объекты
+        for (Element lineWithStations : linesWithStations) {
+            String lineNumber = lineWithStations.attr("data-line");
 
+            lineWithStations.children().stream().forEach(s -> {
+                int dataSize = s.children().get(0).children().size();
+
+                if (dataSize > 2) {
+
+                    String stationName = s.children().get(0).children().get(1).text();
+                    Station station = stationIndexFromSite.getStation(stationName, lineNumber);
+                    List <Station> connectedStations = new ArrayList<>();
+                    connectedStations.add(station);
+
+                    for (int i = 2; i < dataSize; i++) {
+
+                        //номер линии, на которую переходим
+                        String connectionLineNumber = s.children().get(0).children().get(2).attributes().get("class");
+                        connectionLineNumber = connectionLineNumber.replaceAll("t-icon-metroln ln-", "");
+
+                        //имя станции, на которую переходим
+                        String connectionStationText = s.children().get(0).children().get(2).attributes().get("title");
+                        connectionStationText = connectionStationText.substring(connectionStationText.indexOf('«') + 1);
+                        connectionStationText = connectionStationText.substring(0, connectionStationText.indexOf('»'));
+
+                        Station connectedStation = stationIndexFromSite.getStation(connectionStationText, connectionLineNumber);
+                        connectedStations.add(connectedStation);
+                    }
+
+                    stationIndexFromSite.addConnection(connectedStations);
+                }
+            });
         }
 
     }
@@ -86,12 +117,12 @@ public class Main {
         JSONObject jsonObject = new JSONObject();
 
         JSONObject jsonObjectStations = new JSONObject();
+        JSONArray jsonConnectionsArray = new JSONArray();
         JSONArray jsonObjectLinesArray = new JSONArray();
 
         for (Map.Entry<String, Line> lineEntry : stationIndexFromSite.getNumber2line().entrySet()) {
             JSONArray stationsListArray = new JSONArray();
             stationIndexFromSite.getStationsOnLine(lineEntry.getValue()).stream()
-//            lineEntry.getValue().getStations().stream()
                     .forEach(s -> stationsListArray.add(s.getName()));
             jsonObjectStations.put(lineEntry.getValue().getNumber(), stationsListArray);
 
@@ -102,7 +133,29 @@ public class Main {
             jsonObjectLinesArray.add(lineNumberObject);
 
         }
+
+        stationIndexFromSite.getConnections().entrySet().stream().forEach(s->{
+
+            JSONArray jsonArrayConn = new JSONArray();
+
+            JSONObject connectionObject = new JSONObject();
+            connectionObject.put("line", s.getKey().getLine().getNumber());
+            connectionObject.put("station", s.getKey().getName());
+            jsonArrayConn.add(connectionObject);
+
+            for (Station station : s.getValue()) {
+                connectionObject = new JSONObject();
+                connectionObject.put("line", station.getLine().getNumber());
+                connectionObject.put("station", station.getName());
+                jsonArrayConn.add(connectionObject);
+
+            }
+            jsonConnectionsArray.add(jsonArrayConn);
+
+        });
+
         jsonObject.put("stations", jsonObjectStations);
+        jsonObject.put("connections", jsonConnectionsArray);
         jsonObject.put("lines", jsonObjectLinesArray);
 
         try (BufferedWriter writer = Files.newBufferedWriter(Path.of(LOCAL_FILE_PATH))) {
@@ -115,6 +168,23 @@ public class Main {
         System.out.println(jsonObject);
 
     }
+
+
+    public static void printStationsQuantityOnLine() {
+//        //4 (2) выводит в консоль количество станций на каждой линии.
+        stationIndexFromJson.getNumber2line().entrySet().stream()
+                .forEach(s -> System.out.println(s.getValue().getName() + ": " + stationIndexFromJson.getStationsOnLine(s.getValue()).size()));
+    }
+
+    public static void printConnectionsQuantity() {
+  //5 выводит в консоль общее количество переходов
+        //формула: если переход между n станциями, то всего n*(n-1)/2 переходов
+        //т.к. для каждой из n станций делаю подсчет, то  нужно еще делить на n
+        //итого суммирую (n-1)/2
+        double result = stationIndexFromJson.getConnections().values().stream().mapToInt(stations -> stations.size()  / 2).sum();
+        System.out.println("Всего переходов: "+ (int) result);
+    }
+
 
     public static void readStationsFromJsonFile() {
         //4 (1) Читает файл
@@ -129,6 +199,9 @@ public class Main {
             JSONObject stationsObject = (JSONObject) jsonData.get("stations");
             parseStations(stationsObject);
 
+            JSONArray connectionsArray = (JSONArray) jsonData.get("connections");
+            parseConnections(connectionsArray);
+
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -136,10 +209,28 @@ public class Main {
     }
 
 
-    public static void printStationsNumberOnLine() {
-        //4 (2) выводит в консоль количество станций на каждой линии.
-        stationIndexFromJson.getNumber2line().entrySet().stream().forEach(s -> System.out.println(s.getValue().getName() + ": " + s.getValue().getStations().size()));
+    private static void parseConnections(JSONArray connectionsArray) {
+        connectionsArray.forEach(connectionObject ->
+        {
+            JSONArray connection = (JSONArray) connectionObject;
+            List<Station> connectionStations = new ArrayList<>();
+            connection.forEach(item ->
+            {
+                JSONObject itemObject = (JSONObject) item;
+                String lineNumber = (String) itemObject.get("line");
+                String stationName = (String) itemObject.get("station");
+
+                Station station = stationIndexFromJson.getStation(stationName, lineNumber);
+                if (station == null) {
+                    throw new IllegalArgumentException("core.Station " +
+                            stationName + " on line " + lineNumber + " not found");
+                }
+                connectionStations.add(station);
+            });
+            stationIndexFromJson.addConnection(connectionStations);
+        });
     }
+
 
     private static void parseLines(JSONArray linesArray) {
         linesArray.forEach(lineObject -> {

@@ -45,7 +45,7 @@ public class StationIndex {
     public List<Station> getStationsOnLine(Line line) {
         return stations.stream().filter(s->s.getLine().equals(line)).collect(Collectors.toList());
     }
-//
+
 //    public Station getStation(String name) {
 //        for (Station station : stations.values()) {
 //            if (station.getName().equalsIgnoreCase(name)) {
@@ -54,15 +54,20 @@ public class StationIndex {
 //        }
 //        return null;
 //    }
-//
-//    public Station getStation(String name, int lineNumber) {
-//        Station query = new Station(name, getLine(lineNumber));
-//        Station station = stations.ceiling(query);
-//        return station.equals(query) ? station : null;
-//    }
+
+    public Station getStation(String name, String lineNumber) {
+        Station query = new Station(name, getLine(lineNumber));
+        Station station = stations.ceiling(query);
+        return station.equals(query) ? station : null;
+    }
 //
 //    public Set<Station> getConnectedStations(Station station) {
 //        return connections.containsKey(station) ?
 //                connections.get(station) : new TreeSet<>();
 //    }
+
+
+    public Map<Station, TreeSet<Station>> getConnections() {
+        return connections;
+    }
 }
