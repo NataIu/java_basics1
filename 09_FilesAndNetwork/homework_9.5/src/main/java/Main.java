@@ -1,6 +1,5 @@
 import core.Line;
 import core.Station;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -21,8 +20,8 @@ import java.util.*;
 public class Main {
 
     private static final String MOS_METRO_PATH = "https://www.moscowmap.ru/metro.html#lines";
-    public static HashMap<String, Line> linesListFromSite = new HashMap<String, Line>();
-    public static HashMap<String, Line> linesListFromJson = new HashMap<String, Line>();
+    public static StationIndex stationIndexFromSite = new StationIndex();
+    public static StationIndex stationIndexFromJson = new StationIndex();
     private static final String LOCAL_FILE_PATH = "myFiles/metro.json";
     private static Logger logger;
 
@@ -33,7 +32,8 @@ public class Main {
 
         getMetroSchemeFromWebSite();
         saveMetroSchemeTJsonFile();
-        getStationsNumberOnLine();
+        readStationsFromJsonFile();
+        printStationsNumberOnLine();
 
     }
 
@@ -58,18 +58,25 @@ public class Main {
                     String lineNumber = s.attributes().get("data-line");
                     String lineName = s.childNodes().get(0).toString();
                     Line line = new Line(lineNumber, lineName);
-                    linesListFromSite.put(lineNumber, line);
+                    stationIndexFromSite.addLine(line);
                 });
 
         Elements linesWithStations = doc.select(stationsDataPath);
         for (Element lineWithStations : linesWithStations) {
             String lineNumber = lineWithStations.attr("data-line");
-            Line currentLine = linesListFromSite.get(lineNumber);
+            Line currentLine = stationIndexFromSite.getLine(lineNumber);
             lineWithStations.children().stream().forEach(s -> {
                 String stationName = s.children().get(0).children().get(1).text();
                 Station station = new Station(stationName, currentLine);
-                currentLine.getStations().add(station);
+                stationIndexFromSite.addStation(station);
+
+                //переходы можно обраюотать тут же
+                //<span class="t-icon-metroln ln-2" title="переход на станцию «Театральная» Замоскворецкой линии"></span>
+                //отсюда берем номер линии  (из "t-icon-metroln ln-..." )и название станции из  title
+                //мне нужно: s.children().get(0).children().get(>1)
             });
+
+
         }
 
     }
@@ -81,9 +88,10 @@ public class Main {
         JSONObject jsonObjectStations = new JSONObject();
         JSONArray jsonObjectLinesArray = new JSONArray();
 
-        for (Map.Entry<String, Line> lineEntry : linesListFromSite.entrySet()) {
+        for (Map.Entry<String, Line> lineEntry : stationIndexFromSite.getNumber2line().entrySet()) {
             JSONArray stationsListArray = new JSONArray();
-            lineEntry.getValue().getStations().stream()
+            stationIndexFromSite.getStationsOnLine(lineEntry.getValue()).stream()
+//            lineEntry.getValue().getStations().stream()
                     .forEach(s -> stationsListArray.add(s.getName()));
             jsonObjectStations.put(lineEntry.getValue().getNumber(), stationsListArray);
 
@@ -108,8 +116,8 @@ public class Main {
 
     }
 
-    public static void getStationsNumberOnLine() {
-        //4. Читает файл и выводит в консоль количество станций на каждой линии.
+    public static void readStationsFromJsonFile() {
+        //4 (1) Читает файл
 
         try {
             JSONParser parser = new JSONParser();
@@ -121,13 +129,16 @@ public class Main {
             JSONObject stationsObject = (JSONObject) jsonData.get("stations");
             parseStations(stationsObject);
 
-            linesListFromJson.entrySet().stream().forEach(s -> System.out.println(s.getValue().getName() + ": " + s.getValue().getStations().size()));
-
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
 
+    }
 
+
+    public static void printStationsNumberOnLine() {
+        //4 (2) выводит в консоль количество станций на каждой линии.
+        stationIndexFromJson.getNumber2line().entrySet().stream().forEach(s -> System.out.println(s.getValue().getName() + ": " + s.getValue().getStations().size()));
     }
 
     private static void parseLines(JSONArray linesArray) {
@@ -137,7 +148,7 @@ public class Main {
                     (String) lineJsonObject.get("number"),
                     (String) lineJsonObject.get("name")
             );
-            linesListFromJson.put((String) lineJsonObject.get("number"), line);
+            stationIndexFromJson.addLine(line);
         });
     }
 
@@ -145,12 +156,12 @@ public class Main {
         stationsObject.keySet().forEach(lineNumberObject ->
         {
             String lineNumber = (String) lineNumberObject;
-            Line line = linesListFromJson.get(lineNumber);
+            Line line = stationIndexFromJson.getLine(lineNumber);
             JSONArray stationsArray = (JSONArray) stationsObject.get(lineNumberObject);
             stationsArray.forEach(stationObject ->
             {
                 Station station = new Station((String) stationObject, line);
-                line.getStations().add(station);
+                stationIndexFromJson.addStation(station);
             });
         });
     }

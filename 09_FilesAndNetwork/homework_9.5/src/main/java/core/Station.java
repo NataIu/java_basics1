@@ -4,18 +4,21 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
 public class Station //implements Comparable<Station>
 {
-//    private Line line;
+    private Line line;
     private String name;
+    private List<Station> transitions;
 
     public Station(String name, Line line)
     {
         this.name = name;
-//        this.line = line;
+        this.line = line;
     }
 
 
@@ -35,10 +38,10 @@ public class Station //implements Comparable<Station>
 //    {
 //        return compareTo((Station) obj) == 0;
 //    }
-//
-//    @Override
-//    public String toString()
-//    {
-//        return name;
-//    }
+
+    @Override
+    public String toString()
+    {
+        return name;
+    }
 }

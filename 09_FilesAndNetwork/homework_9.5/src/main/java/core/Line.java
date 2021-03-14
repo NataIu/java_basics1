@@ -10,17 +10,17 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class Line //implements Comparable<Line>
+public class Line implements Comparable<Line>
 {
     private String number;
     private String name;
-    private List<Station> stations;
+//    private List<Station> stations;
 
     public Line(String number, String name)
     {
         this.number = number;
         this.name = name;
-        stations = new ArrayList<>();
+//        stations = new ArrayList<>();
     }
 
 //    public void addStation(Station station)
@@ -33,15 +33,15 @@ public class Line //implements Comparable<Line>
 //        return stations;
 //    }
 //
-//    @Override
-//    public int compareTo(Line line)
-//    {
-//        return Integer.compare(number, line.getNumber());
-//    }
-//
-//    @Override
-//    public boolean equals(Object obj)
-//    {
-//        return compareTo((Line) obj) == 0;
-//    }
+    @Override
+    public int compareTo(Line line)
+    {
+              return String.compareTo(number, line.getNumber());
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return compareTo((Line) obj) == 0;
+    }
 }
