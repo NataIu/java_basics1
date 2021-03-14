@@ -20,25 +20,28 @@ import java.util.*;
 public class Main {
 
     private static final String MOS_METRO_PATH = "https://www.moscowmap.ru/metro.html#lines";
-    public static StationIndex stationIndexFromSite = new StationIndex();
-    public static StationIndex stationIndexFromJson = new StationIndex();
-    private static final String LOCAL_FILE_PATH = "myFiles/metro.json";
     private static Logger logger;
 
 
     public static void main(String[] args) {
 
         logger = LogManager.getRootLogger();
+        StationIndex stationIndexFromSite = new StationIndex();
+        StationIndex stationIndexFromJson = new StationIndex();
+        String filePath = "myFiles/metro.json";
 
-        getMetroSchemeFromWebSite();
-        saveMetroSchemeTJsonFile();
-        readStationsFromJsonFile();
-        printStationsQuantityOnLine();
-        printConnectionsQuantity();
+
+        getMetroSchemeFromWebSite(stationIndexFromSite);
+        saveMetroSchemeTJsonFile(stationIndexFromSite, filePath);
+
+        readStationsFromJsonFile(stationIndexFromJson, filePath);
+
+        printStationsQuantityOnLine(stationIndexFromJson);
+        printConnectionsQuantity(stationIndexFromJson);
 
     }
 
-    public static void getMetroSchemeFromWebSite() {
+    public static void getMetroSchemeFromWebSite(StationIndex stationIndexFromSite) {
         //1. Получает HTML-код страницы «Список станций Московского метрополитена» https://www.moscowmap.ru/metro.html#lines с помощью библиотеки jsoup.
         //2. Парсит полученную страницу и получает из неё:
         //Линии московского метро (получаете имя линии, номер линии, цвет парсить не надо).
@@ -112,7 +115,7 @@ public class Main {
 
     }
 
-    public static void saveMetroSchemeTJsonFile() {
+    public static void saveMetroSchemeTJsonFile(StationIndex stationIndexFromSite, String filePath) {
         //3. Создаёт и записывает на диск JSON-файл со списком станций по линиям и списком линий по формату JSON-файла из проекта SPBMetro (файл map.json).
         JSONObject jsonObject = new JSONObject();
 
@@ -158,7 +161,7 @@ public class Main {
         jsonObject.put("connections", jsonConnectionsArray);
         jsonObject.put("lines", jsonObjectLinesArray);
 
-        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(LOCAL_FILE_PATH))) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(filePath))) {
             writer.write(jsonObject.toJSONString());
             writer.flush();
         } catch (IOException e) {
@@ -170,13 +173,13 @@ public class Main {
     }
 
 
-    public static void printStationsQuantityOnLine() {
-//        //4 (2) выводит в консоль количество станций на каждой линии.
+    public static void printStationsQuantityOnLine(StationIndex stationIndexFromJson) {
+    //4 (2) выводит в консоль количество станций на каждой линии.
         stationIndexFromJson.getNumber2line().entrySet().stream()
                 .forEach(s -> System.out.println(s.getValue().getName() + ": " + stationIndexFromJson.getStationsOnLine(s.getValue()).size()));
     }
 
-    public static void printConnectionsQuantity() {
+    public static void printConnectionsQuantity(StationIndex stationIndexFromJson) {
   //5 выводит в консоль общее количество переходов
         //формула: если переход между n станциями, то всего n*(n-1)/2 переходов
         //т.к. для каждой из n станций делаю подсчет, то  нужно еще делить на n
@@ -186,21 +189,21 @@ public class Main {
     }
 
 
-    public static void readStationsFromJsonFile() {
+    public static void readStationsFromJsonFile(StationIndex stationIndexFromJson, String filePath) {
         //4 (1) Читает файл
 
         try {
             JSONParser parser = new JSONParser();
-            JSONObject jsonData = (JSONObject) parser.parse(getJsonFile());
+            JSONObject jsonData = (JSONObject) parser.parse(getJsonFile(filePath));
 
             JSONArray linesArray = (JSONArray) jsonData.get("lines");
-            parseLines(linesArray);
+            parseLines(linesArray, stationIndexFromJson);
 
             JSONObject stationsObject = (JSONObject) jsonData.get("stations");
-            parseStations(stationsObject);
+            parseStations(stationsObject, stationIndexFromJson);
 
             JSONArray connectionsArray = (JSONArray) jsonData.get("connections");
-            parseConnections(connectionsArray);
+            parseConnections(connectionsArray, stationIndexFromJson);
 
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -208,8 +211,7 @@ public class Main {
 
     }
 
-
-    private static void parseConnections(JSONArray connectionsArray) {
+    private static void parseConnections(JSONArray connectionsArray, StationIndex stationIndexFromJson) {
         connectionsArray.forEach(connectionObject ->
         {
             JSONArray connection = (JSONArray) connectionObject;
@@ -231,8 +233,7 @@ public class Main {
         });
     }
 
-
-    private static void parseLines(JSONArray linesArray) {
+    private static void parseLines(JSONArray linesArray, StationIndex stationIndexFromJson) {
         linesArray.forEach(lineObject -> {
             JSONObject lineJsonObject = (JSONObject) lineObject;
             Line line = new Line(
@@ -243,7 +244,7 @@ public class Main {
         });
     }
 
-    private static void parseStations(JSONObject stationsObject) {
+    private static void parseStations(JSONObject stationsObject, StationIndex stationIndexFromJson) {
         stationsObject.keySet().forEach(lineNumberObject ->
         {
             String lineNumber = (String) lineNumberObject;
@@ -257,11 +258,10 @@ public class Main {
         });
     }
 
-
-    private static String getJsonFile() {
+    private static String getJsonFile(String filePath) {
         StringBuilder builder = new StringBuilder();
         try {
-            List<String> lines = Files.readAllLines(Paths.get(LOCAL_FILE_PATH));
+            List<String> lines = Files.readAllLines(Paths.get(filePath));
             lines.forEach(line -> builder.append(line));
         } catch (Exception e) {
             logger.error(e.getMessage());
