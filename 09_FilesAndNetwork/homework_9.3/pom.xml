@@ -81,12 +81,12 @@
             <artifactId>checkstyle</artifactId>
             <version>${puppycrawl.version}</version>
         </dependency>
-      <!--  &lt;!&ndash; https://mvnrepository.com/artifact/com.opencsv/opencsv &ndash;&gt;
+      <!-- &lt;!&ndash; https://mvnrepository.com/artifact/com.opencsv/opencsv -->
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
             <version>5.3</version>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
