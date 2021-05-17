@@ -1,13 +1,14 @@
 
-import Entities.Course;
-import Entities.Teacher;
+import Entities.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -20,13 +21,26 @@ public class Main {
 
         Session session = sessionFactory.openSession();
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите id курса:");
-        int id = scanner.nextInt();
-
-        Course course = session.get(Course.class,id);
-        System.out.println(course.getName()+" - "+ course.getStudentsCount()+ " - "+ course.getTeacher().getName());
+        refillLinkedPurchase(session);
 
         sessionFactory.close();
+    }
+
+    private static void refillLinkedPurchase(Session session) {
+        Transaction txn = session.beginTransaction();
+
+        //почистим таблицу, если уже была заполнена
+        session.createQuery("DELETE " + LinkedPurchase.class.getSimpleName()).executeUpdate();
+
+        //заполним таблицу
+        String hqlIns = "in" +
+                "sert into "+ LinkedPurchase.class.getSimpleName() +
+                " (studentId, courseId) "+
+                "select student.id, course.id from "+ Purchase.class.getSimpleName();
+
+        int rows = session.createQuery(hqlIns).executeUpdate();
+
+        System.out.println("rows: "+ rows);
+        txn.commit();
     }
 }

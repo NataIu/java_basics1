@@ -2,12 +2,10 @@ package Entities;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -26,4 +24,16 @@ public class Purchase implements Serializable {
 
     @Column(name = "subscription_date")
     private Date subscriptionDate;
+
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "course_name", referencedColumnName = "name")
+    })
+    private  Course course;
+
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "student_name", referencedColumnName = "name")
+    })
+    private  Student student;
 }

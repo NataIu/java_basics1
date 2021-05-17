@@ -17,13 +17,14 @@
         <!-- Set the current session context -->
         <property name="current_session_context_class">thread</property>
         <!-- Drop and re-create the database schema on startup -->
-        <property name="hbm2ddl.auto">validate</property>
+        <property name="hbm2ddl.auto">update</property>
 
         <mapping class="Entities.Course"></mapping>
         <mapping class="Entities.Teacher"></mapping>
         <mapping class="Entities.Student"></mapping>
         <mapping class="Entities.Subscription"></mapping>
         <mapping class="Entities.Purchase"></mapping>
+        <mapping class="Entities.LinkedPurchase"></mapping>
 
     </session-factory>
 </hibernate-configuration>
