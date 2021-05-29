@@ -1,19 +1,25 @@
+package main.java;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public class Main {
+public class ImageResizer extends Thread{
 
-    public static void main(String[] args) {
-        String srcFolder = "/users/sortedmap/Desktop/src";
-        String dstFolder = "/users/sortedmap/Desktop/dst";
+    private File[] files;
+    private String dstFolder;
+    private int newWidth;
+    private long start;
 
-        File srcDir = new File(srcFolder);
+    public ImageResizer(File[] files, String dstFolder, int newWidth, long start) {
+        this.files = files;
+        this.dstFolder = dstFolder;
+        this.newWidth = newWidth;
+        this.start = start;
+    }
 
-        long start = System.currentTimeMillis();
-
-        File[] files = srcDir.listFiles();
-
+    @Override
+    public void run() {
         try {
             for (File file : files) {
                 BufferedImage image = ImageIO.read(file);
@@ -21,12 +27,12 @@ public class Main {
                     continue;
                 }
 
-                int newWidth = 300;
+
                 int newHeight = (int) Math.round(
-                    image.getHeight() / (image.getWidth() / (double) newWidth)
+                        image.getHeight() / (image.getWidth() / (double) newWidth)
                 );
                 BufferedImage newImage = new BufferedImage(
-                    newWidth, newHeight, BufferedImage.TYPE_INT_RGB
+                        newWidth, newHeight, BufferedImage.TYPE_INT_RGB
                 );
 
                 int widthStep = image.getWidth() / newWidth;
@@ -46,6 +52,7 @@ public class Main {
             ex.printStackTrace();
         }
 
-        System.out.println("Duration: " + (System.currentTimeMillis() - start));
+        System.out.println("Finished: "+ (System.currentTimeMillis() - start) +" ms");
+
     }
 }
