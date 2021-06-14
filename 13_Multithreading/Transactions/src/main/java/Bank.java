@@ -32,7 +32,7 @@ public class Bank {
 
         Account accountTo = accounts.get(toAccountNum);
         Account accountFrom = accounts.get(fromAccountNum);
-        synchronized (Account.class) {
+
 
 //            System.out.println("amount: "+amount+", from"+accountFrom+", to: "+ accountTo);
 
@@ -40,15 +40,17 @@ public class Bank {
                 verificateOperation(accountFrom, accountTo, amount);
                 //synchronized делаю по Account.class, т.к. хочу завершить операцию на обоих счетах до передачи другому потоку
                 if ((!accountTo.isBlocked()) && (!accountFrom.isBlocked())) {
-                     accountTo.increaseMoney(amount);
+                    synchronized (accountTo) {
+                        accountTo.increaseMoney(amount);
+                    }
+                    synchronized (accountFrom) {
                     accountFrom.decreaseMoney(amount);
+                    }
                 }
             } catch (BankOperationException e) {
                 e.printStackTrace();
             }
 
-            int i =1; //to del!
-        }
 
     }
 
