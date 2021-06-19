@@ -17,7 +17,7 @@ public class Bank {
     }
 
     public synchronized boolean isFraud(String fromAccountNum, String toAccountNum, long amount)
-        throws InterruptedException {
+            throws InterruptedException {
         Thread.sleep(1000);
         return random.nextBoolean();
     }
@@ -36,20 +36,24 @@ public class Bank {
 
 //            System.out.println("amount: "+amount+", from"+accountFrom+", to: "+ accountTo);
 
-            try {
-                verificateOperation(accountFrom, accountTo, amount);
-                //synchronized делаю по Account.class, т.к. хочу завершить операцию на обоих счетах до передачи другому потоку
-                if ((!accountTo.isBlocked()) && (!accountFrom.isBlocked())) {
+        try {
+            verificateOperation(accountFrom, accountTo, amount);
+            if ((!accountTo.isBlocked()) && (!accountFrom.isBlocked())) {
+                synchronized (accountFrom) {
+                    if (accountFrom.getMoney() < amount) {
+                        wait();
+                    }
                     synchronized (accountTo) {
                         accountTo.increaseMoney(amount);
-                    }
-                    synchronized (accountFrom) {
-                    accountFrom.decreaseMoney(amount);
+                        accountFrom.decreaseMoney(amount);
+                        notify();
                     }
                 }
-            } catch (BankOperationException e) {
-                e.printStackTrace();
+
             }
+        } catch (BankOperationException e) {
+            e.printStackTrace();
+        }
 
 
     }
