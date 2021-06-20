@@ -4,10 +4,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.RecursiveTask;
 
 import static java.lang.Thread.sleep;
@@ -35,7 +32,7 @@ public class LinkReader extends RecursiveTask<Integer> { // что тут воз
         }
 
         List<LinkReader> taskList = new ArrayList<>();
-        List<String> childrenLinks = getChildrenLinks();
+        Set<String> childrenLinks = getChildrenLinks();
 
 
         for (String childLink : childrenLinks) {
@@ -55,9 +52,10 @@ public class LinkReader extends RecursiveTask<Integer> { // что тут воз
 
     }
 
-    public List getChildrenLinks() {
+    public Set<String> getChildrenLinks() {
 
-        List<String> result = new ArrayList<>();
+//        List<String> result = new ArrayList<>();
+        Set<String> result = new HashSet<>();
 
         if (siteMap.contains(link)) {
             //эта ссылка уже обрабатывается. Пропускаем
@@ -84,7 +82,9 @@ public class LinkReader extends RecursiveTask<Integer> { // что тут воз
             )
             {
                 String tmpLink = element.absUrl("href");
-                result.add(tmpLink);
+                if (! result.contains(tmpLink)) {
+                    result.add(tmpLink);
+                }
             }
         }
         return result;
