@@ -33,29 +33,43 @@ public class Bank {
         Account accountTo = accounts.get(toAccountNum);
         Account accountFrom = accounts.get(fromAccountNum);
 
-
-//            System.out.println("amount: "+amount+", from"+accountFrom+", to: "+ accountTo);
-
         try {
             verificateOperation(accountFrom, accountTo, amount);
             if ((!accountTo.isBlocked()) && (!accountFrom.isBlocked())) {
-                synchronized (accountFrom) {
-                    if (accountFrom.getMoney() < amount) {
-                        wait();
-                    }
-                    synchronized (accountTo) {
-                        accountTo.increaseMoney(amount);
-                        accountFrom.decreaseMoney(amount);
-                        notify();
-                    }
-                }
-
+                doSynchronizedTransfer(amount, accountTo, accountFrom);
             }
         } catch (BankOperationException e) {
             e.printStackTrace();
         }
 
+    }
 
+    private void doSynchronizedTransfer(long amount, Account accountTo, Account accountFrom) throws BankOperationException {
+        if (accountTo.getAccNumber().compareTo(accountFrom.getAccNumber()) > 0) {
+            synchronized (accountTo) {
+                synchronized (accountFrom) {
+                    doTransferOperation(amount, accountTo, accountFrom);
+                }
+            }
+        } else {
+            synchronized (accountFrom) {
+                synchronized (accountTo) {
+                    doTransferOperation(amount, accountTo, accountFrom);
+                }
+            }
+        }
+    }
+
+    private void doTransferOperation(long amount, Account accountTo, Account accountFrom) throws BankOperationException {
+        if (accountFrom.getMoney() >= amount) {
+            accountTo.increaseMoney(amount);
+            accountFrom.decreaseMoney(amount);
+        }
+        else {
+
+            throw new BankOperationException("Do not have enough money for operation: amount="
+                    +amount+", from: "+ accountFrom+ ", to: " + accountTo);
+        }
     }
 
     private void verificateOperation(Account accountFrom, Account accountTo, long amount) throws InterruptedException, BankOperationException {

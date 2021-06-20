@@ -1,9 +1,5 @@
 import lombok.AllArgsConstructor;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor

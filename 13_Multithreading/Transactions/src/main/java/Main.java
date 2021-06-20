@@ -1,12 +1,10 @@
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Main {
 
     public static final int MAX_ACCOUNT_NUMBER = 30;
-    public static final long DEFAULT_MONEY_VALUE = 50;
+    public static final long DEFAULT_MONEY_VALUE = 5000;
 
     public static final int THREAD_VALUE = 10;
     public static final int THREAD_COUNT = 10;
