@@ -54,7 +54,6 @@ public class LinkReader extends RecursiveTask<Integer> { // что тут воз
 
     public Set<String> getChildrenLinks() {
 
-//        List<String> result = new ArrayList<>();
         Set<String> result = new HashSet<>();
 
         if (siteMap.contains(link)) {
@@ -69,7 +68,7 @@ public class LinkReader extends RecursiveTask<Integer> { // что тут воз
                 siteMap.add(link); //это настоящая ссылка, добавим ее в список
                 System.out.println(this.toString()+ " - " +link + " - " + siteMap.size());
             }
-        } catch (NullPointerException|IOException e) {
+        } catch (IOException e) {
 //            logger.error(e.getMessage());
             return result;
         }
