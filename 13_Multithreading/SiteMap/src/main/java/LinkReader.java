@@ -14,12 +14,11 @@ public class LinkReader extends RecursiveTask<Integer> { // что тут воз
 
     private String link;
     private String linkRegExpression;
-    private Set<String> siteMap;
+    private Set<String> foundLinks;
 
-    public LinkReader(String link, String linkRegExpression, Set<String> siteMap) {
+    public LinkReader(String link, String linkRegExpression) {
         this.link = link;
         this.linkRegExpression = linkRegExpression;
-        this.siteMap = siteMap;
     }
 
     @Override
@@ -31,16 +30,14 @@ public class LinkReader extends RecursiveTask<Integer> { // что тут воз
             e.printStackTrace();
         }
 
-        List<LinkReader> taskList = new ArrayList<>();
+        Set<LinkReader> taskList = new HashSet<>();
         Set<String> childrenLinks = getChildrenLinks();
 
-
+        int i =1;
         for (String childLink : childrenLinks) {
-            if (!siteMap.contains(childLink)) {
-                LinkReader task = new LinkReader(childLink, linkRegExpression, siteMap);
-//                siteMap.add(childLink);
+            if (!LinkStorage.getSiteMap().contains(childLink)) {
+                LinkReader task = new LinkReader(childLink, linkRegExpression);
                 taskList.add(task);
-//                System.out.println(childLink);
                 task.fork();
             }
         }
@@ -56,20 +53,38 @@ public class LinkReader extends RecursiveTask<Integer> { // что тут воз
 
         Set<String> result = new HashSet<>();
 
-        if (siteMap.contains(link)) {
-            //эта ссылка уже обрабатывается. Пропускаем
+        if (LinkStorage.getSiteMap().contains(link)) {
+            //эта ссылка уже обрабатывается либо обработана. Пропускаем
+            System.out.println("No 1: "+this.toString()+ " - " +link + " - " + LinkStorage.getSiteMap().size());
+            return result;
+        }
+
+        if (LinkStorage.getBadLinks().contains(link)) {
+            //эта ссылка некорректная. Пропускаем
+            System.out.println("No 4: "+this.toString()+ " - " +link + " - " + LinkStorage.getSiteMap().size());
             return result;
         }
 
         Document doc = null;
         try {
             doc = Jsoup.connect(link).maxBodySize(0).get();
-            synchronized (siteMap) {
-                siteMap.add(link); //это настоящая ссылка, добавим ее в список
-                System.out.println(this.toString()+ " - " +link + " - " + siteMap.size());
-            }
+                if (LinkStorage.getSiteMap().contains(link)) {
+                    //эта ссылка уже обрабатывается либо обработана. Пропускаем
+                    System.out.println("No 2: "+this.toString()+ " - " +link + " - " + LinkStorage.getSiteMap().size());
+                    return result;
+                }
+
+                if (LinkStorage.getBadLinks().contains(link)) {
+                    //эта ссылка некорректная. Пропускаем
+                    System.out.println("No 5: "+this.toString()+ " - " +link + " - " + LinkStorage.getSiteMap().size());
+                    return result;
+                }
+
+                LinkStorage.addSiteLink(link); //это настоящая ссылка, добавим ее в список обрабатываемых-обработанных
+                System.out.println(this.toString()+ " - " +link + " - " + LinkStorage.getSiteMap().size());
         } catch (IOException e) {
-//            logger.error(e.getMessage());
+            System.out.println("No 3: "+this.toString()+ " - " +link + " - " + LinkStorage.getSiteMap().size());
+            LinkStorage.addBadLink(link);
             return result;
         }
 
@@ -77,11 +92,11 @@ public class LinkReader extends RecursiveTask<Integer> { // что тут воз
         doc.select("a");
         for (Element element : elements) {
             if (element.absUrl("href").matches(linkRegExpression)
-            && ! element.absUrl("href").matches(".*#.*")
-            )
+            && ! element.absUrl("href").matches(".*#.*"))
             {
+                LinkStorage.addFoundLink(link); //добавим ее в список всех найденных
                 String tmpLink = element.absUrl("href");
-                if (! result.contains(tmpLink)) {
+                if (! result.contains(tmpLink) && ! LinkStorage.getFoundLinks().contains(tmpLink)) {
                     result.add(tmpLink);
                 }
             }

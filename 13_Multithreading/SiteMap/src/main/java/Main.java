@@ -2,10 +2,7 @@
 
 import java.io.*;
 
-import java.util.Date;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.ForkJoinPool;
 
 public class Main {
@@ -14,15 +11,15 @@ public class Main {
 //    public static final String WEB_SITE = "https://skillbox.ru";
 //    public static final String WEB_SITE = "https://marialife.com/";
     public static final String LINK_REG_EXPRESSION = WEB_SITE + ".*";
-    public static volatile Set<String> siteMap = new TreeSet<>();
+//    public static volatile Set<String> siteMap = new TreeSet<>();
     public static final String FILE_PATH = "myLentaSiteMap"+ (new Date());
-
+//    public static final SortedSet<String> siteMap = Collections.synchronizedSortedSet(new TreeSet<>());
+//    public static final Set<String> foundLinks = Collections.synchronizedSet(new HashSet<>());
 
     public static void main(String[] args) throws FileNotFoundException {
 
         System.out.println("Start" + (new Date()));
-//        siteMap.add(WEB_SITE);
-        int res = new ForkJoinPool().invoke(new LinkReader(WEB_SITE, LINK_REG_EXPRESSION, siteMap));
+        int res = new ForkJoinPool().invoke(new LinkReader(WEB_SITE, LINK_REG_EXPRESSION));
         System.out.println("I've parsed! Start printing.");
         writeSiteMapToFile();
         System.out.println("Finish"+ (new Date()));
@@ -35,7 +32,7 @@ public class Main {
 
         PrintWriter writer = new PrintWriter(FILE_PATH);
 
-        for (String siteMapElement : siteMap) {
+        for (String siteMapElement : LinkStorage.getSiteMap()) {
             if (stack.size() == 0) {
                 writeStringToFile(stack, writer, siteMapElement, spaceText);
             } else {
