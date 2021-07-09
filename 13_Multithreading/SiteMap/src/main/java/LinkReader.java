@@ -33,9 +33,10 @@ public class LinkReader extends RecursiveTask<Integer> { // что тут воз
         Set<LinkReader> taskList = new HashSet<>();
         Set<String> childrenLinks = getChildrenLinks();
 
-        int i =1;
         for (String childLink : childrenLinks) {
             if (!LinkStorage.getSiteMap().contains(childLink)) {
+                LinkStorage.addSiteLink(childLink); //это настоящая ссылка, добавим ее в список обрабатываемых-обработанных
+
                 LinkReader task = new LinkReader(childLink, linkRegExpression);
                 taskList.add(task);
                 task.fork();
@@ -53,11 +54,7 @@ public class LinkReader extends RecursiveTask<Integer> { // что тут воз
 
         Set<String> result = new HashSet<>();
 
-        if (LinkStorage.getSiteMap().contains(link)) {
-            //эта ссылка уже обрабатывается либо обработана. Пропускаем
-            System.out.println("No 1: "+this.toString()+ " - " +link + " - " + LinkStorage.getSiteMap().size());
-            return result;
-        }
+
 
         if (LinkStorage.getBadLinks().contains(link)) {
             //эта ссылка некорректная. Пропускаем
@@ -68,11 +65,7 @@ public class LinkReader extends RecursiveTask<Integer> { // что тут воз
         Document doc = null;
         try {
             doc = Jsoup.connect(link).maxBodySize(0).get();
-                if (LinkStorage.getSiteMap().contains(link)) {
-                    //эта ссылка уже обрабатывается либо обработана. Пропускаем
-                    System.out.println("No 2: "+this.toString()+ " - " +link + " - " + LinkStorage.getSiteMap().size());
-                    return result;
-                }
+
 
                 if (LinkStorage.getBadLinks().contains(link)) {
                     //эта ссылка некорректная. Пропускаем
@@ -80,7 +73,6 @@ public class LinkReader extends RecursiveTask<Integer> { // что тут воз
                     return result;
                 }
 
-                LinkStorage.addSiteLink(link); //это настоящая ссылка, добавим ее в список обрабатываемых-обработанных
                 System.out.println(this.toString()+ " - " +link + " - " + LinkStorage.getSiteMap().size());
         } catch (IOException e) {
             System.out.println("No 3: "+this.toString()+ " - " +link + " - " + LinkStorage.getSiteMap().size());
@@ -90,11 +82,12 @@ public class LinkReader extends RecursiveTask<Integer> { // что тут воз
 
         Elements elements = doc.select("a");
         doc.select("a");
+        LinkStorage.addFoundLink(link); //добавим ее в список всех найденных
+
         for (Element element : elements) {
             if (element.absUrl("href").matches(linkRegExpression)
             && ! element.absUrl("href").matches(".*#.*"))
             {
-                LinkStorage.addFoundLink(link); //добавим ее в список всех найденных
                 String tmpLink = element.absUrl("href");
                 if (! result.contains(tmpLink) && ! LinkStorage.getFoundLinks().contains(tmpLink)) {
                     result.add(tmpLink);

@@ -23,7 +23,9 @@ public class LinkStorage {
     }
 
     public static void addSiteLink(String link) {
-        siteMap.add(link);
+       if (!siteMap.add(link)) {
+           System.out.println("Try to add existing link!");
+       }
     }
 
     public static void addFoundLink(String link) {

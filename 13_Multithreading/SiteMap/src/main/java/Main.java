@@ -8,7 +8,7 @@ import java.util.concurrent.ForkJoinPool;
 public class Main {
 
         public static final String WEB_SITE = "https://lenta.ru/";
-//    public static final String WEB_SITE = "https://skillbox.ru";
+    //public static final String WEB_SITE = "https://skillbox.ru";
 //    public static final String WEB_SITE = "https://marialife.com/";
     public static final String LINK_REG_EXPRESSION = WEB_SITE + ".*";
 //    public static volatile Set<String> siteMap = new TreeSet<>();
