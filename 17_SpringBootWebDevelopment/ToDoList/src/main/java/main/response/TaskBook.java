@@ -4,10 +4,11 @@ import lombok.Getter;
 import main.TaskException;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TaskBook {
 
-    private static  Map<Integer, Task> tasks = Collections.synchronizedMap(new HashMap<>());
+    private static ConcurrentHashMap<Integer,Task> tasks = new ConcurrentHashMap<>();
 
     public static ArrayList<Task> getTaskList() {
         ArrayList<Task> list = new ArrayList<>();

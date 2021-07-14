@@ -21,7 +21,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите id курса:");
         int id = scanner.nextInt();
-        s
+
         Course course = session.get(Course.class,id);
         System.out.println(course.getName()+" - "+ course.getStudentsCount());
 

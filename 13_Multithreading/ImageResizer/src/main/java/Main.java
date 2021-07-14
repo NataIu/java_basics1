@@ -11,7 +11,8 @@ public class Main {
     public static void main(String[] args) {
         String srcFolder = "/Users/Nata/ForJava/src";
         String dstFolder = "/Users/Nata/ForJava/dst";
-        int cores = Runtime.getRuntime().availableProcessors();
+//        int cores = Runtime.getRuntime().availableProcessors();
+        int cores = 10;
         System.out.println("cores: " + cores);
 
         File srcDir = new File(srcFolder);
@@ -38,6 +39,6 @@ public class Main {
         }
 
 
-        System.out.println("Duration: " + (System.currentTimeMillis() - start));
+//        System.out.println("Duration: " + (System.currentTimeMillis() - start));
     }
 }
