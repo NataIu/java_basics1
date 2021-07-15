@@ -18,39 +18,61 @@ public class TaskController {
     //получение списка дел
     @GetMapping("/tasks")
     public ResponseEntity list() {
-        return taskService.list();
+        return new ResponseEntity(taskService.list(), HttpStatus.OK);
     }
 
     //получение дела по id
     @GetMapping("/tasks/{id}")
     public ResponseEntity getTaskById(@PathVariable Integer id) {
-        return taskService.getTaskById(id);
+        Task task = taskService.getTaskById(id);
+        if (task == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return new ResponseEntity(task, HttpStatus.OK);
     }
 
     //создание дела
     @PostMapping("/tasks")
     public ResponseEntity addTask(Task task) {
-        return taskService.addTask(task);
+        ResponseEntity response;
+        try {
+            Integer result = taskService.addTask(task);
+            response = new ResponseEntity(result, HttpStatus.OK);
+        }
+        catch (TaskException e) {
+            response = ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+
+        }
+        return response;
     }
 
 
     //обновление дела
     @PutMapping("/tasks/{id}")
     public ResponseEntity updateTask(@PathVariable Integer id, Task task) {
-        return taskService.updateTask(id,task);
+        ResponseEntity response;
+        try {
+            Task result = taskService.updateTask(id,task);
+            response = new ResponseEntity(result, HttpStatus.OK);
+        }
+        catch (TaskException e) {
+            response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 
+        }
+        return response;
     }
 
     //удаление дела
     @DeleteMapping("/tasks/{id}")
     public ResponseEntity deleteTask(@PathVariable Integer id) {
-        return taskService.deleteTask(id);
+        return new ResponseEntity(taskService.deleteTask(id), HttpStatus.OK);
     }
 
 
     //удаление всего списка
     @DeleteMapping("/tasks")
     public ResponseEntity deleteAllTask() {
-        return taskService.deleteAllTask();
+        taskService.deleteAllTask();
+        return new ResponseEntity(null, HttpStatus.OK);
     }
 }

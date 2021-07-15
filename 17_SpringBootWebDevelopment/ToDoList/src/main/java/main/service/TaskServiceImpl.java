@@ -7,24 +7,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 public interface TaskServiceImpl {
 
 
     //получение списка дел
-    public ResponseEntity list();
+    public List<Task> list();
 
     //получение дела по id
-    public ResponseEntity getTaskById(Integer id);
+    public Task getTaskById(Integer id);
 
     //создание дела
-    public ResponseEntity addTask(Task task);
+    public Integer addTask(Task task) throws TaskException;
 
     //обновление дела
-    public ResponseEntity updateTask(Integer id, Task task);
+    public Task updateTask(Integer id, Task task) throws TaskException;
 
     //удаление дела
-    public ResponseEntity deleteTask(Integer id);
+    public Task deleteTask(Integer id);
 
     //удаление всего списка
-    public ResponseEntity deleteAllTask() ;
+    public void deleteAllTask() ;
 }
