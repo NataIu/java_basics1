@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration status="WARN">
     <appenders>
-        <!--        <Console name="Console" target="SYSTEM_OUT">-->
-        <!--            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>-->
-        <!--        </Console>-->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
         <File name="InfoFile" fileName="logs/info.log" immediateFlush="true">
             <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </File>
@@ -11,6 +11,7 @@
     <loggers>
         <root level="info">
             <appender-ref ref="InfoFile"/>
+            <appender-ref ref="Console"/>
         </root>
 
     </loggers>

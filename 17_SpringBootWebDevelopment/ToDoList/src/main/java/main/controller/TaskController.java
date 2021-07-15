@@ -1,8 +1,7 @@
 package main.controller;
 
 import main.TaskException;
-import main.response.Task;
-import main.response.TaskBook;
+import main.model.Task;
 import main.service.TaskServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
