@@ -21,7 +21,7 @@ public interface TaskServiceImpl {
     public Task updateTask(Integer id, Task task) throws TaskException;
 
     //удаление дела
-    public Task deleteTask(Integer id);
+    public void deleteTask(Integer id);
 
     //удаление всего списка
     public void deleteAllTask() ;

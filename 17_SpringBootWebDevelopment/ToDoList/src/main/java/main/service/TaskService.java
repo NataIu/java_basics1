@@ -62,7 +62,7 @@ public class TaskService implements TaskServiceImpl {
             throw new TaskException("Task with id = " + id + " do not exist");
         }
         else {
-            taskRepository.deleteById(id);
+//            taskRepository.deleteById(id);
             taskRepository.save(task);
         }
         return task;
@@ -70,14 +70,10 @@ public class TaskService implements TaskServiceImpl {
     }
 
     @Override
-    public Task deleteTask(Integer id) {
+    public void deleteTask(Integer id) {
         Optional<Task> optionalTask = taskRepository.findById(id);
         if (optionalTask.isPresent()) {
             taskRepository.deleteById(id);
-            return optionalTask.get();
-        }
-        else {
-            return null;
         }
     }
 

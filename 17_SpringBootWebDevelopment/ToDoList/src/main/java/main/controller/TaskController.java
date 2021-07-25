@@ -64,7 +64,8 @@ public class TaskController {
     //удаление дела
     @DeleteMapping("/tasks/{id}")
     public ResponseEntity deleteTask(@PathVariable Integer id) {
-        return new ResponseEntity(taskService.deleteTask(id), HttpStatus.OK);
+        taskService.deleteTask(id);
+        return new ResponseEntity(null, HttpStatus.NO_CONTENT);
     }
 
 
@@ -72,6 +73,6 @@ public class TaskController {
     @DeleteMapping("/tasks")
     public ResponseEntity deleteAllTask() {
         taskService.deleteAllTask();
-        return new ResponseEntity(null, HttpStatus.OK);
+        return new ResponseEntity(null, HttpStatus.NO_CONTENT);
     }
 }
