@@ -20,6 +20,9 @@ public class Main {
         // Удалим из нее все документы
         collection.drop();
 
+        BsonDocument query_index = BsonDocument.parse("{\"age\" : 1}");
+        collection.createIndex(query_index);
+
         Students students = new Students();
         students.initByFile(file);
 
@@ -32,6 +35,11 @@ public class Main {
 
            collection.insertOne(document);
         }
+
+        BsonDocument query_check_index = BsonDocument.parse("{\"age\" : 42}");
+        collection.find(query_check_index).forEach((Consumer<Document>) document -> {
+            System.out.println(""+ document.get("name") + ": "+ document.get("age"));
+        });
 
         System.out.println("Общее количество студентов в базе: "+ collection.countDocuments());
 
