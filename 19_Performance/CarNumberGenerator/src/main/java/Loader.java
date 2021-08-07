@@ -36,14 +36,26 @@ public class Loader {
         System.out.println((System.currentTimeMillis() - start) + " ms");
     }
 
+
+
     private static String padNumber(int number, int numberLength) {
+//        String numberStr = Integer.toString(number);
+//        int padSize = numberLength - numberStr.length();
+//        for (int i = 0; i < padSize; i++) {
+//            numberStr = '0' + numberStr;
+//        }
+//
+//        return numberStr;
+
         String numberStr = Integer.toString(number);
+        StringBuilder numberStrBuilder = new StringBuilder();
+
         int padSize = numberLength - numberStr.length();
-
         for (int i = 0; i < padSize; i++) {
-            numberStr = '0' + numberStr;
+            numberStrBuilder.append("0");
         }
+        numberStrBuilder.append(numberStr);
 
-        return numberStr;
+        return numberStrBuilder.toString();
     }
 }
