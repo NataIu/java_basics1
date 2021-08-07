@@ -1,52 +1,43 @@
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Loader {
+
+    public static int MAX_REGION_NUMBER = 99;
+    public static int THREAD_COUNT = 4;
 
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
 
-//        FileOutputStream writer = new FileOutputStream("res/numbers.txt");
-        PrintWriter writer = new PrintWriter("res/numbers.txt");
+        List<NumberBuilder> numberBuilderList = new ArrayList<>();
+        int threadSize = (int) Math.ceil((double) MAX_REGION_NUMBER/THREAD_COUNT);
 
-        char letters[] = {'У', 'К', 'Е', 'Н', 'Х', 'В', 'А', 'Р', 'О', 'С', 'М', 'Т'};
-        StringBuilder builder = new StringBuilder();
-        for (int regionCode = 1; regionCode < 100; regionCode++) {
-            String regionCodeStr = Integer.toString(regionCode);
-            int regionCodeStrLength = regionCodeStr.length();
-            builder = new StringBuilder();
-            for (int number = 1; number < 1000; number++) {
-                String numberStr = Integer.toString(number);
-                int numberStringLength = numberStr.length();
-                for (char firstLetter : letters) {
-                    for (char secondLetter : letters) {
-                        for (char thirdLetter : letters) {
-                            builder.append(firstLetter);
-                            builder.append(padNumber(numberStr, numberStringLength,3));
-                            builder.append(secondLetter);
-                            builder.append(thirdLetter);
-                            builder.append(padNumber(regionCodeStr, regionCodeStrLength, 2));
-                            builder.append("\n");
-                        }
-                    }
-                }
-            }
-            writer.write(builder.toString());
+        for (int i = 0; i < THREAD_COUNT; i++) {
+
+            int startNumber = i*threadSize + 1;
+            int finishNumber = Math.min( (i+1)*threadSize , MAX_REGION_NUMBER );
+
+            NumberBuilder numberBuilder= new NumberBuilder(startNumber,finishNumber,i);
+            numberBuilderList.add(numberBuilder);
+            numberBuilder.start();
+
         }
 
-        writer.flush();
-        writer.close();
+        try {
+            for (NumberBuilder numberBuilder: numberBuilderList) {
+                numberBuilder.join();
+            }
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         System.out.println((System.currentTimeMillis() - start) + " ms");
     }
 
 
 
-    private static String padNumber(String numberStr, int numberStringLength, int numberLength) {
-        int padSize = numberLength - numberStringLength;
-        for (int i = 0; i < padSize; i++) {
-            numberStr = '0' + numberStr;
-        }
-        return numberStr;
-    }
+
 }
