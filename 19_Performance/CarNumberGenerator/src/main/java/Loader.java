@@ -1,7 +1,6 @@
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
 
 public class Loader {
 
@@ -11,9 +10,10 @@ public class Loader {
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
 
-        List<NumberBuilder> numberBuilderList = new ArrayList<>();
+        List<Callable<NumberBuilder>> numberBuilderList = new ArrayList<>();
         int threadSize = (int) Math.ceil((double) MAX_REGION_NUMBER/THREAD_COUNT);
 
+        ExecutorService service = Executors.newSingleThreadExecutor();
         for (int i = 0; i < THREAD_COUNT; i++) {
 
             int startNumber = i*threadSize + 1;
@@ -21,14 +21,10 @@ public class Loader {
 
             NumberBuilder numberBuilder= new NumberBuilder(startNumber,finishNumber,i);
             numberBuilderList.add(numberBuilder);
-            numberBuilder.start();
-
         }
 
         try {
-            for (NumberBuilder numberBuilder: numberBuilderList) {
-                numberBuilder.join();
-            }
+            List<Future<NumberBuilder>> futures = service.invokeAll(numberBuilderList);
         }
         catch (InterruptedException e) {
             e.printStackTrace();

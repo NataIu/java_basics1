@@ -2,9 +2,10 @@ import lombok.AllArgsConstructor;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.concurrent.Callable;
 
 @AllArgsConstructor
-public class NumberBuilder extends Thread{
+public class NumberBuilder implements Callable {
 
 
     int startRegionCode;
@@ -12,7 +13,7 @@ public class NumberBuilder extends Thread{
     int threadNumber;
 
     @Override
-    public void run() {
+    public Object call() {
 
         StringBuilder builder;
         PrintWriter writer = null;
@@ -51,6 +52,7 @@ public class NumberBuilder extends Thread{
         writer.flush();
         writer.close();
 
+        return null;
     }
 
     private static String padNumber(String numberStr, int numberStringLength, int numberLength) {
