@@ -3,14 +3,22 @@ import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
+import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Aggregates.*;
+import com.mongodb.client.model.BsonField;
 import org.bson.BsonDocument;
+import org.bson.BsonInt32;
+import org.bson.BsonString;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+
+
 
 public class MongoBase {
 
@@ -75,16 +83,31 @@ public class MongoBase {
     private void getStatistics() {
 
         List<Bson> bsonDocumentList = new ArrayList<>();
-        bsonDocumentList.add(BsonDocument.parse("{$lookup: {from:\"products\",localField:\"products\",foreignField:\"name\",as:\"products_list\" } } "));
-        bsonDocumentList.add(BsonDocument.parse("{$unwind: {path:\"$products_list\"} } "));
-        bsonDocumentList.add(BsonDocument.parse((" {$group: {" +
-                " _id: \"$name\", " +
-                " average_price: {$avg: \"$products_list.price\"}, " +
-                " product_count: {$sum: 1}, " +
-                " cheapest_product: {$min: \"$products_list.price\"}," +
-                " most_expensive_product: {$max: \"$products_list.price\"}," +
-                " count_cheaper_100: {$sum: { $cond: [ { $lt: [ \"$products_list.price\", 100 ] }, 1, 0 ] } } " +
-                " } } ")));
+
+        //        bsonDocumentList.add(BsonDocument.parse("{$lookup: {from:\"products\",localField:\"products\",foreignField:\"name\",as:\"products_list\" } } "));
+        bsonDocumentList.add(Aggregates.lookup("products", "products", "name", "products_list"));
+
+        //        bsonDocumentList.add(BsonDocument.parse("{$unwind: {path:\"$products_list\"} } "));
+        bsonDocumentList.add(Aggregates.unwind("$products_list"));
+
+//        bsonDocumentList.add(BsonDocument.parse((" {$group: {" +
+//                " _id: \"$name\", " +
+//                " average_price: {$avg: \"$products_list.price\"}, " +
+//                " product_count: {$sum: 1}, " +
+//                " cheapest_product: {$min: \"$products_list.price\"}," +
+//                " most_expensive_product: {$max: \"$products_list.price\"}," +
+//                " count_cheaper_100: {$sum: { $cond: [ { $lt: [ \"$products_list.price\", 100 ] }, 1, 0 ] } } " +
+//                " } } ")));
+
+        bsonDocumentList.add(Aggregates.group("$name",
+
+                new BsonField("average_price", new BsonDocument("$avg", new BsonString("$products_list.price"))),
+                new BsonField("product_count", new BsonDocument("$sum", new BsonInt32(1))),
+                new BsonField("cheapest_product", new BsonDocument("$min", new BsonString("$products_list.price"))),
+                new BsonField("most_expensive_product", new BsonDocument("$max", new BsonString("$products_list.price"))),
+                new BsonField("average_price", new BsonDocument("$avg", new BsonString("$products_list.price"))),
+                new BsonField("count_cheaper_100", BsonDocument.parse("{$sum: { $cond: [ { $lt: [ \"$products_list.price\", 100 ] }, 1, 0 ] } } "))
+                ));
 
         AggregateIterable<Document> list = collection_shops.aggregate(bsonDocumentList);
         System.out.println("Статистика: ");
