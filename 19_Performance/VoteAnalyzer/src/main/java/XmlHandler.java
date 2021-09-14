@@ -13,7 +13,7 @@ public class XmlHandler extends DefaultHandler {
     private static SimpleDateFormat birthDayFormat = new SimpleDateFormat("yyyy.MM.dd");
     private static SimpleDateFormat visitDateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
     private HashMap<Voter, Integer> voterCount = new HashMap<>();
-    private static HashMap<Integer, WorkTime> voteStationWorkTimes = new HashMap<>();
+    private HashMap<Integer, WorkTime> voteStationWorkTimes = new HashMap<>();
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
@@ -28,15 +28,15 @@ public class XmlHandler extends DefaultHandler {
                 voterCount.put(voter, count + 1);
 
 
-                Integer station = Integer.valueOf(attributes.getValue("station"));
-                Date time = visitDateFormat.parse(attributes.getValue("time"));
-
-                WorkTime workTime = voteStationWorkTimes.get(station);
-                if (workTime == null) {
-                    workTime = new WorkTime();
-                    voteStationWorkTimes.put(station, workTime);
-                }
-                workTime.addVisitTime(time.getTime());
+//                Integer station = Integer.valueOf(attributes.getValue("station"));
+//                Date time = visitDateFormat.parse(attributes.getValue("time"));
+//
+//                WorkTime workTime = voteStationWorkTimes.get(station);
+//                if (workTime == null) {
+//                    workTime = new WorkTime();
+//                    voteStationWorkTimes.put(station, workTime);
+//                }
+//                workTime.addVisitTime(time.getTime());
 
             }
         } catch (ParseException e) {

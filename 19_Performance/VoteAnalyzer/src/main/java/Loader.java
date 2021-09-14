@@ -29,28 +29,39 @@ public class Loader {
         XmlHandler handler = new XmlHandler();
         parser.parse(new File(fileName), handler);
         handler.printDuplicatedVoters();
-        handler.printWorkTime();
+//        handler.printWorkTime();
         long usageSax = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - usage;
 
-        usage = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        parseFile(fileName);
-        //Printing results
-        System.out.println("Voting station work times: ");
-        for (Integer votingStation : voteStationWorkTimes.keySet()) {
-            WorkTime workTime = voteStationWorkTimes.get(votingStation);
-            System.out.println("\t" + votingStation + " - " + workTime);
-        }
-        System.out.println("Duplicated voters: ");
-        for (Voter voter : voterCounts.keySet()) {
-            Integer count = voterCounts.get(voter);
-            if (count > 1) {
-                System.out.println("\t" + voter + " - " + count);
-            }
-        }
-        long usageDom = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+//        long usage2 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+//        SAXParserFactory factory2 = SAXParserFactory.newInstance();
+//        SAXParser parser2 = factory2.newSAXParser();
+//        XmlHandler2 handler2 = new XmlHandler2();
+//        parser2.parse(new File(fileName), handler2);
+//        handler2.printDuplicatedVoters();
+////        handler2.printWorkTime();
+//        long usageSax2 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - usage2;
 
-        System.out.println("SAX_: "+ usageSax);
-        System.out.println("DOM_: "+ usageDom);
+
+        long usage3 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        parseFile(fileName);
+//        //Printing results
+//        System.out.println("Voting station work times: ");
+//        for (Integer votingStation : voteStationWorkTimes.keySet()) {
+//            WorkTime workTime = voteStationWorkTimes.get(votingStation);
+//            System.out.println("\t" + votingStation + " - " + workTime);
+//        }
+//        System.out.println("Duplicated voters: ");
+//        for (Voter voter : voterCounts.keySet()) {
+//            Integer count = voterCounts.get(voter);
+//            if (count > 1) {
+//                System.out.println("\t" + voter + " - " + count);
+//            }
+//        }
+        long usageDom = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - usage3;
+
+        System.out.println("SAX_: "+ usageSax/8/1024/1024);
+//        System.out.println("SAX2: "+ usageSax2/8/1024/1024);
+        System.out.println("DOM_: "+ usageDom/8/1024/1024);
     }
 
     private static void parseFile(String fileName) throws Exception {
@@ -59,7 +70,7 @@ public class Loader {
         Document doc = db.parse(new File(fileName));
 
         findEqualVoters(doc);
-        fixWorkTimes(doc);
+//        fixWorkTimes(doc);
     }
 
     private static void findEqualVoters(Document doc) throws Exception {
