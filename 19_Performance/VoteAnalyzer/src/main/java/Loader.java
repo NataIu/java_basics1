@@ -19,7 +19,6 @@ public class Loader {
 
     private static HashMap<Integer, WorkTime> voteStationWorkTimes = new HashMap<>();
     private static HashMap<Voter, Integer> voterCounts = new HashMap<>();
-
     public static void main(String[] args) throws Exception {
         String fileName = "data-18M.xml";
 
@@ -27,8 +26,13 @@ public class Loader {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser parser = factory.newSAXParser();
         XmlHandler handler = new XmlHandler();
+        long time = System.currentTimeMillis();
         parser.parse(new File(fileName), handler);
-        handler.printDuplicatedVoters();
+        DBConnection.executeMultiInsert();
+        System.out.println("time: " + (System.currentTimeMillis()-time));
+        DBConnection.printVoterCounts();
+        DBConnection.printWorkTime();
+//        handler.printDuplicatedVoters();
 //        handler.printWorkTime();
         long usageSax = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - usage;
 
@@ -42,8 +46,8 @@ public class Loader {
 //        long usageSax2 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - usage2;
 
 
-        long usage3 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        parseFile(fileName);
+//        long usage3 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+//        parseFile(fileName);
 //        //Printing results
 //        System.out.println("Voting station work times: ");
 //        for (Integer votingStation : voteStationWorkTimes.keySet()) {
@@ -57,11 +61,11 @@ public class Loader {
 //                System.out.println("\t" + voter + " - " + count);
 //            }
 //        }
-        long usageDom = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - usage3;
+//        long usageDom = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - usage3;
 
-        System.out.println("SAX_: "+ usageSax/8/1024/1024);
+//        System.out.println("SAX_: "+ usageSax/8/1024/1024);
 //        System.out.println("SAX2: "+ usageSax2/8/1024/1024);
-        System.out.println("DOM_: "+ usageDom/8/1024/1024);
+//        System.out.println("DOM_: "+ usageDom/8/1024/1024);
     }
 
     private static void parseFile(String fileName) throws Exception {
@@ -81,8 +85,7 @@ public class Loader {
             NamedNodeMap attributes = node.getAttributes();
 
             String name = attributes.getNamedItem("name").getNodeValue();
-            Date birthDay = birthDayFormat
-                .parse(attributes.getNamedItem("birthDay").getNodeValue());
+            Date birthDay = birthDayFormat.parse(attributes.getNamedItem("birthDay").getNodeValue());
 
             Voter voter = new Voter(name, birthDay);
             Integer count = voterCounts.get(voter);
